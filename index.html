@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSG AFL Dashboard - Round 5, 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script>window.onerror=function(m,s,l,c,e){document.getElementById('root').innerHTML='<pre style="color:red;padding:20px;font-size:14px">ERROR: '+m+'\nLine: '+l+':'+c+'\n'+(e&&e.stack||'')+'</pre>';}</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+:root{--bg0:#070b10;--bg1:#0d1117;--bg2:#141b24;--bg3:#1a2332;--acc:#00d4a0;--acc2:#00a67d;--accB:#00ffaa;--grn:#22c55e;--ylw:#eab308;--red:#ef4444;--t1:#e8eaed;--t2:#8b95a5;--t3:#5c6878;--brd:#1e2a36;--brdA:rgba(0,212,160,0.3)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg0);color:var(--t1);min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:var(--acc2);border-radius:3px}
+.hdr{background:linear-gradient(135deg,var(--bg1),#0a1520);border-bottom:1px solid var(--brd);padding:14px 20px;position:sticky;top:0;z-index:100}
+.hdr-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.logo-t{font-size:28px;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#00ffaa,#00d4a0,#0088ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-s{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+.gsel{display:grid;gap:6px;justify-content:center;width:100%}
+.gbtn{background:var(--bg2);border:1px solid var(--brd);color:var(--t2);padding:8px 4px;border-radius:7px;cursor:pointer;font-size:10px;font-weight:500;transition:all .2s;font-family:inherit;white-space:nowrap;min-height:44px}
+.gbtn:hover{border-color:var(--acc2);color:var(--t1)}.gbtn.on{background:linear-gradient(135deg,rgba(0,212,160,.15),rgba(0,136,255,.1));border-color:var(--acc);color:var(--accB);box-shadow:0 0 10px rgba(0,212,160,.2)}
+.ctr{max-width:1400px;margin:0 auto;padding:18px 20px}
+.sec{margin-bottom:24px}
+.stit{font-size:12px;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.stit::before{content:'';display:inline-block;width:3px;height:14px;background:var(--acc);border-radius:2px}
+.arr{font-size:8px;margin-left:auto;color:var(--t3);transition:transform .2s}.arr.open{transform:rotate(180deg)}
+.tg{display:flex;gap:3px;background:var(--bg1);border:1px solid var(--brd);border-radius:7px;padding:2px;flex-wrap:wrap}
+.tb{background:transparent;border:none;color:var(--t3);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:10px;font-weight:500;transition:all .2s;font-family:inherit;white-space:nowrap}
+.tb:hover{color:var(--t2)}.tb.on{background:var(--acc);color:#000;font-weight:700}
+.cr{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.cl{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.ts-grid{display:flex;flex-direction:column;gap:4px}
+.ts-row{display:grid;grid-template-columns:1fr auto 1fr;gap:4px;align-items:center;padding:5px 8px;border-radius:8px;border:1px solid rgba(30,42,54,.4);transition:background .2s}
+.ts-val{font-size:13px;font-weight:700;min-width:36px}
+.ts-val.l{text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+.ts-val.r{text-align:left;display:flex;align-items:center;gap:4px}
+.ts-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;font-weight:600;text-align:center;min-width:0;white-space:nowrap;padding:0 2px}
+.ts-bar{height:5px;border-radius:3px;transition:width .4s ease}
+.ts-bar-wrap{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden;min-width:20px}
+.ts-bar-wrap.l{display:flex;justify-content:flex-end}
+.ts-hdr{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:4px 10px;margin-bottom:4px}
+.ts-tn{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.ts-tn.l{text-align:right}.ts-tn.r{text-align:left}.ts-tn.c{text-align:center;color:var(--t3);font-weight:400;font-size:10px}
+.gl-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.gl-col-hdr{font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+.gl-wrap{max-height:320px;overflow-y:auto;overflow-x:auto;border:1px solid var(--brd);border-radius:8px}
+.gl-tbl{width:100%;border-collapse:collapse;font-size:10px}
+.gl-tbl th{text-align:left;padding:4px 6px;color:var(--t3);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg1);z-index:1}
+.gl-tbl td{padding:4px 6px;color:var(--t2);border-bottom:1px solid rgba(30,42,54,.3)}
+.gl-tbl tr:hover td{background:rgba(0,212,160,.02)}
+.gml{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 0 4px}
+.gmv{font-size:11px;color:var(--t3);font-weight:600}
+.gvn{text-align:center;font-size:10px;color:var(--t3);margin-bottom:14px}
+.ftr{text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:1px solid var(--brd);margin-top:32px}
+.form-dots{display:flex;gap:3px;justify-content:center;margin-top:4px}
+.form-dot{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.streak-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;cursor:pointer;min-width:200px;max-width:320px;flex:0 0 auto;transition:all 0.2s;overflow:hidden}
+.streak-card:hover{border-color:var(--acc2)}
+.streak-inner{display:flex;align-items:stretch;min-height:80px}
+.streak-photo{width:70px;flex-shrink:0;position:relative;overflow:hidden}
+.streak-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:-webkit-optimize-contrast;image-rendering:smooth}
+.streak-info{flex:1;padding:8px 10px;display:flex;flex-direction:column;justify-content:center}
+.alt-slider-wrap{margin-top:8px;padding:8px 14px;background:var(--bg1);border:1px solid var(--brd);border-radius:8px}
+.alt-slider-title{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.alt-slider-track{position:relative;height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:10px 0 4px;cursor:pointer;padding:8px 0;background-clip:content-box}
+.alt-slider-fill{position:absolute;top:0;left:0;height:100%;background:var(--acc);border-radius:3px;transition:width .2s}
+.alt-slider-thumb{position:absolute;top:50%;width:16px;height:16px;background:var(--acc);border-radius:50%;transform:translate(-50%,-50%);cursor:grab;box-shadow:0 0 8px rgba(0,212,160,.5);transition:left .15s;z-index:2}
+.alt-slider-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--t3)}
+.alt-slider-odds{display:flex;justify-content:space-between;margin-top:4px;font-size:10px}
+.alt-slider-odds .alt-fav{color:var(--acc);font-weight:700}
+.alt-slider-odds .alt-und{color:var(--t1);font-weight:700}
+.alt-slider-center{text-align:center;font-size:13px;font-weight:800;color:var(--acc);margin:4px 0}
+.odds-row{display:flex;justify-content:center;gap:16px;margin-bottom:12px;font-size:11px;color:var(--t2);flex-wrap:wrap;align-items:center}
+.odds-row .od-item{display:flex;align-items:center;gap:4px}
+.odds-row .od-val{font-weight:700;color:var(--acc)}
+.tbadge{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;display:inline-block}
+.gl-score{font-size:10px;opacity:1}
+.tab-main{display:flex;gap:3px;background:var(--bg1);border:1px solid var(--brd);border-radius:7px;padding:2px;margin-bottom:16px;justify-content:center;max-width:300px;margin-left:auto;margin-right:auto}
+.mc{display:flex;flex-direction:column;gap:2px}
+.mr{display:grid;grid-template-columns:1fr 48px 1fr;gap:4px;margin-bottom:2px}
+.mh{display:grid;grid-template-columns:1fr 48px 1fr;gap:4px;margin-bottom:6px;padding:4px 0}
+.mht{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:4px 8px;border-radius:6px;text-align:center}
+.mhv{display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--t3)}
+.mp{display:flex;align-items:center;justify-content:center}
+.mpb{background:var(--acc);color:#000;border-radius:5px;padding:2px 6px;font-size:8px;font-weight:700;letter-spacing:.3px;text-align:center}
+.bs{text-align:center;margin:8px 0 4px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.player-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:12px}
+.player-tile{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;overflow:hidden;transition:all .2s}
+.player-tile:hover{border-color:var(--acc2)}
+.player-tile-header{padding:10px;background:var(--bg3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:11px}
+.player-tile-header:hover{background:rgba(0,212,160,.1)}
+.player-tile-content{padding:10px;display:flex;flex-direction:column;gap:8px}
+.strike-bar-item{display:flex;flex-direction:column;gap:3px}
+.strike-bar-label{font-size:9px;font-weight:600;color:var(--t2)}
+.strike-bar{display:flex;align-items:center;gap:4px;height:20px}
+.strike-bar-fill{background:var(--acc);border-radius:3px;height:100%;min-width:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:8px;font-weight:700;color:#000}
+.strike-bar-bg{flex:1;background:rgba(255,255,255,.05);border-radius:3px;height:100%;margin-left:4px}
+.strike-bar-odds{font-size:9px;color:var(--acc);font-weight:700;min-width:40px;text-align:right}
+.pos-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:8px;font-weight:700;background:rgba(0,212,160,.2);color:var(--acc);text-transform:uppercase}
+.pc{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:6px 8px;cursor:pointer;transition:all .15s}
+.pc:hover{border-color:var(--acc)}
+.pc.exp{border-color:var(--acc);background:var(--bg1)}
+.pc.rt{text-align:right}
+.pi{display:flex;align-items:center;gap:6px}
+.pc.rt .pi{flex-direction:row-reverse}
+.pn-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;overflow:hidden}
+.pn-num img{width:100%;height:100%;object-fit:cover;border-radius:50%;image-rendering:auto;-webkit-image-rendering:auto}
+.team-logo,.team-logo-sm,.team-logo-lg{object-fit:contain;vertical-align:middle}
+.team-logo{width:22px;height:22px}
+.team-logo-sm{width:16px;height:16px}
+.team-logo-lg{width:32px;height:32px}
+.pname{font-size:10px;font-weight:700;line-height:1.2}
+.ppos{font-size:8px;color:var(--t3)}
+.psr{margin-left:auto;text-align:right;flex-shrink:0}
+.pc.rt .psr{margin-left:0;margin-right:auto;text-align:left}
+.psr-val{font-size:14px;font-weight:800;line-height:1}
+.psr-lbl{font-size:7px;color:var(--t3);text-transform:uppercase}
+.pd{background:var(--bg1);border:1px solid var(--brd);border-radius:8px;padding:8px;margin-bottom:4px}
+@media(max-width:600px){.mr,.mh{grid-template-columns:1fr 28px 1fr;gap:2px}.pc{padding:4px 5px}.pname{font-size:9px}.psr-val{font-size:12px}.gl-split{grid-template-columns:1fr;gap:16px}}
+.field-player-card{background:var(--bg2);border:1px solid var(--brd);border-radius:6px;padding:6px;font-size:9px}
+.field-player-name{font-weight:700;color:var(--t1);margin-bottom:2px}
+.field-player-stat{font-size:8px;color:var(--acc)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:10px}
+.modal-box{background:var(--bg0);border-radius:16px;width:100%;max-width:480px;position:relative;overflow:hidden;margin:10px auto}
+.modal-top{position:sticky;top:0;z-index:210;display:flex;align-items:stretch;padding:0;border-radius:16px 16px 0 0;overflow:hidden;min-height:120px}
+.modal-top-photo{width:110px;min-height:120px;flex-shrink:0;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.modal-top-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:-webkit-optimize-contrast;image-rendering:smooth}
+.modal-top-photo-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900}
+.modal-top-info{flex:1;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.modal-close-btn{position:absolute;top:8px;right:8px;background:var(--acc);color:#000;border:none;padding:4px 12px;border-radius:5px;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.5px;z-index:211}
+.modal-close-btn:hover{background:var(--accB)}
+.modal-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:2px}
+.modal-team-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;margin-bottom:4px}
+.modal-pos{font-size:10px;color:rgba(255,255,255,.7)}
+.modal-odds-line{font-size:10px;color:rgba(255,255,255,.85);margin-top:4px;line-height:1.5}
+.modal-odds-line b{color:var(--acc);font-weight:800}
+.modal-cards{display:flex;gap:4px;padding:8px 10px;overflow-x:auto}
+.modal-card{flex:1;min-width:0;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid rgba(255,255,255,.1)}
+.modal-card-val{font-size:16px;font-weight:900;color:#fff}
+.modal-card-lbl{font-size:7px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-filters{padding:6px 10px;position:sticky;top:120px;z-index:205;background:var(--bg0)}
+.modal-section-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);padding:10px 14px 2px}
+.modal-section-sub{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t2);padding:0 14px 6px}
+.modal-factor{margin:3px 10px;border-radius:8px;overflow:hidden;transition:all .15s;cursor:pointer}
+.modal-factor.open{border:1px solid rgba(255,255,255,.2)}
+.modal-factor-hdr{padding:8px 12px;display:flex;align-items:center;gap:8px}
+.modal-factor-name{font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.modal-factor-desc{flex:1;font-size:9px;color:rgba(255,255,255,.5);text-align:right;white-space:nowrap}
+.modal-factor-sr{font-size:15px;font-weight:900;min-width:50px;text-align:right}
+.modal-factor-arrow{font-size:8px;color:var(--t3);transition:transform .2s;margin-left:4px}
+.modal-factor.open .modal-factor-arrow{transform:rotate(180deg)}
+.modal-factor-body{padding:0 10px 8px}
+.modal-gl-wrap{max-height:172px;overflow-y:auto;border:1px solid var(--brd);border-radius:6px}
+@media(max-width:500px){.modal-top-photo{width:90px}.modal-name{font-size:14px}.modal-cards{padding:6px 8px}.modal-factor{margin:3px 8px}.modal-odds-line{white-space:nowrap;overflow-x:auto}.modal-team-badge{margin-bottom:0}}
+@media(max-width:600px){.gml{gap:6px;flex-wrap:nowrap}.odds-row{gap:8px;font-size:10px;flex-wrap:nowrap;overflow-x:auto}.odds-row .od-item{flex-shrink:0}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="data.js"></script>
+<script type="text/babel">
+const {useState, useMemo, useCallback} = React;
+
+const D = {
+  results: RAW_RESULTS.map(r => ({
+    y:r[0],rd:r[1],t1:r[2],t2:r[3],
+    hq1:r[4],hq2:r[5],hq3:r[6],hft:r[7],
+    aq1:r[8],aq2:r[9],aq3:r[10],aft:r[11],
+    v:r[12],fav:r[13],fl:r[14],pl:r[15],
+    cond:r[16],tod:r[17],dow:r[18],time:r[19],ds:r[20]||0
+  })),
+  orGames: OR_GAMES,
+  odds: ODDS,
+  playerData: PLAYER_DATA,
+  playerOdds: PLAYER_ODDS,
+  teamList: TEAM_LIST,
+  oddsPlayers: ODDS_PLAYERS,
+  posLookup: POS_LOOKUP,
+  photos: PLAYER_PHOTOS,
+  logos: TEAM_LOGOS,
+  posRankings: POS_RANKINGS,
+};
+
+function getScores(g, team, qMode) {
+  const isH = g.t1===team;
+  if(qMode==='total') return {scored:isH?g.hft:g.aft, conceded:isH?g.aft:g.hft, total:g.hft+g.aft};
+  const hS=[g.hq1, g.hq2-g.hq1, g.hq3-g.hq2, g.hft-g.hq3];
+  const aS=[g.aq1, g.aq2-g.aq1, g.aq3-g.aq2, g.aft-g.aq3];
+  const qi={'q1':0,'q2':1,'q3':2,'q4':3}[qMode];
+  const scored=isH?hS[qi]:aS[qi], conceded=isH?aS[qi]:hS[qi];
+  return {scored, conceded, total:scored+conceded};
+}
+
+function getEffectiveOdds(oddsData, qMode) {
+  if (!oddsData) return {line: 0, ptsLine: 0};
+  if (qMode === 'total') return {line: oddsData.spread, ptsLine: oddsData.total};
+  return {
+    line: oddsData['spread_' + qMode] || 0,
+    ptsLine: oddsData['total_' + qMode] || 0
+  };
+}
+
+function computeTeamStats(team, games, line, ptsLine, qMode, teamIsFav, teamTotalPoint, oppTotalPoint) {
+  const n=games.length;
+  if(!n) return {games:0,winPct:0,linePct:null,ptsPct:null,ttPct:null,ttConcPct:null,w40:0,w139:0,l139:0,l40:0,ppg:'0.0',pcpg:'0.0'};
+  let wins=0,losses=0,draws=0,w40=0,w139=0,l139=0,l40=0,pf=0,pa=0,lineCov=0,ptsOver=0,ttOver=0,ttConc=0;
+  games.forEach(g=>{
+    const s=getScores(g,team,qMode);
+    const m=s.scored-s.conceded;
+    pf+=s.scored;pa+=s.conceded;
+    if(m>0){wins++;if(m>=40)w40++;else w139++;}
+    else if(m<0){losses++;if(Math.abs(m)>=40)l40++;else l139++;}
+    else draws++;
+    if(line!==0){
+      const absLine=Math.abs(line);
+      const lineFlipped=line<0; // negative = und is now fav
+      const isFavAtLine=lineFlipped?!teamIsFav:teamIsFav;
+      if(isFavAtLine){if(m>absLine)lineCov++;}else{if(m>-absLine)lineCov++;}
+    }
+    if(ptsLine>0&&s.total>ptsLine)ptsOver++;
+    if(teamTotalPoint>0&&s.scored>=teamTotalPoint)ttOver++;
+    if(oppTotalPoint>0&&s.conceded>=oppTotalPoint)ttConc++;
+  });
+  return {
+    games:n,winPct:Math.round(wins/n*100),drawPct:Math.round(draws/n*100),
+    linePct:line!==0?Math.round(lineCov/n*100):null,
+    ptsPct:ptsLine>0?Math.round(ptsOver/n*100):null,
+    ttPct:teamTotalPoint>0?Math.round(ttOver/n*100):null,
+    ttConcPct:oppTotalPoint>0?Math.round(ttConc/n*100):null,
+    w40:Math.round(w40/n*100),w139:Math.round(w139/n*100),
+    l139:Math.round(l139/n*100),l40:Math.round(l40/n*100),
+    ppg:(pf/n).toFixed(1),pcpg:(pa/n).toFixed(1)
+  };
+}
+
+const POS_FULL = {
+  'FB': 'Full Back', 'HB': 'Half Back', 'C': 'Centre',
+  'HF': 'Half Forward', 'FF': 'Full Forward', 'FOL': 'Follower',
+  'INT': 'Interchange', 'EMG': 'Emergency'
+};
+
+function OddsSlider({items, label, favTeam, undTeam, homeTeam, favStyle, undStyle, currentVal, onChange}) {
+  const midIdx = useMemo(() => {
+    if (!items.length) return 0;
+    const ci = items.findIndex(it => it.point === currentVal);
+    return ci >= 0 ? ci : Math.floor(items.length / 2);
+  }, [items, currentVal]);
+  const [idx, setIdx] = useState(midIdx);
+  const dragging = React.useRef(false);
+  const trackRef = React.useRef(null);
+  if (!items.length) return null;
+  const item = items[idx] || items[0];
+  // Map so that midIdx (actual game line) sits at 50%
+  let pct;
+  if (items.length <= 1) { pct = 50; }
+  else if (idx <= midIdx) { pct = midIdx > 0 ? (idx / midIdx) * 50 : 0; }
+  else { pct = 50 + ((idx - midIdx) / (items.length - 1 - midIdx)) * 50; }
+  const isSpread = label === 'spread';
+  const favAbbr = ABBREV[favTeam] || favTeam;
+  const undAbbr = ABBREV[undTeam] || undTeam;
+  const leftPrice = isSpread ? item.favPrice : item.overPrice;
+  const leftBookie = isSpread ? item.favBookie : item.overBookie;
+  const rightPrice = isSpread ? item.undPrice : item.underPrice;
+  const rightBookie = isSpread ? item.undBookie : item.underBookie;
+  // For spread: point > 0 means fav giving pts, point < 0 means und giving pts (flipped)
+  const pt = item.point;
+  const favLine = isSpread ? (pt >= 0 ? -pt : Math.abs(pt)) : null;
+  const undLine = isSpread ? (pt >= 0 ? pt : -Math.abs(pt)) : null;
+  const updateFromX = (clientX) => {
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const clickPct = x / rect.width * 100;
+    // Reverse the midpoint mapping: pct < 50 maps to 0..midIdx, pct >= 50 maps to midIdx..last
+    let newIdx;
+    if (clickPct <= 50) { newIdx = midIdx > 0 ? Math.round((clickPct / 50) * midIdx) : 0; }
+    else { newIdx = Math.round(midIdx + ((clickPct - 50) / 50) * (items.length - 1 - midIdx)); }
+    const clamped = Math.max(0, Math.min(items.length - 1, newIdx));
+    setIdx(clamped);
+    if (onChange) onChange(items[clamped].point);
+  };
+  const handleDown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    dragging.current = true;
+    updateFromX(e.touches ? e.touches[0].clientX : e.clientX);
+    const onMove = (ev) => { if (dragging.current) updateFromX(ev.touches ? ev.touches[0].clientX : ev.clientX); };
+    const onUp = () => { dragging.current = false; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+  };
+  const fmtLine = (v) => v > 0 ? `+${v}` : v < 0 ? `${v}` : '0';
+  return (
+    <div className="alt-slider-wrap" onClick={e => e.stopPropagation()}>
+      {isSpread ? (
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:4}}>
+          <div style={{textAlign:'left',flex:1}}>
+            <div style={{fontSize:11,fontWeight:700,color:favStyle?.txt||'var(--t1)'}}>{favAbbr} {fmtLine(favLine)}</div>
+            {leftPrice != null && <div style={{fontSize:10}}><span className="od-val">${leftPrice.toFixed(2)}</span> <span style={{fontSize:8,color:'var(--t3)'}}>({leftBookie})</span></div>}
+          </div>
+          <div style={{textAlign:'right',flex:1}}>
+            <div style={{fontSize:11,fontWeight:700,color:undStyle?.txt||'var(--t1)'}}>{undAbbr} {fmtLine(undLine)}</div>
+            {rightPrice != null && <div style={{fontSize:10}}><span className="od-val">${rightPrice.toFixed(2)}</span> <span style={{fontSize:8,color:'var(--t3)'}}>({rightBookie})</span></div>}
+          </div>
+        </div>
+      ) : (
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+          {leftPrice != null ? <span className="od-item" style={{fontSize:11}}><span className="od-val">O ${leftPrice.toFixed(2)}</span> <span style={{fontSize:8,color:'var(--t3)',marginLeft:2}}>({leftBookie})</span></span> : <span/>}
+          <span style={{fontSize:13,fontWeight:800,color:'var(--acc)'}}>{pt}</span>
+          {rightPrice != null ? <span className="od-item" style={{fontSize:11}}><span className="od-val">U ${rightPrice.toFixed(2)}</span> <span style={{fontSize:8,color:'var(--t3)',marginLeft:2}}>({rightBookie})</span></span> : <span/>}
+        </div>
+      )}
+      <div className="alt-slider-track" ref={trackRef} onMouseDown={handleDown} onTouchStart={handleDown} style={{height:8,marginTop:10}}>
+        <div style={{position:'absolute',left:'50%',top:'-3px',bottom:'-3px',width:2,background:'var(--t3)',opacity:0.5,transform:'translateX(-50%)',zIndex:1,borderRadius:1}} />
+        <div className="alt-slider-fill" style={{width: pct + '%'}} />
+        <div className="alt-slider-thumb" style={{left: pct + '%'}} />
+      </div>
+      <div style={{display:'flex',justifyContent:'space-between',fontSize:8,color:'var(--t3)',marginTop:2}}>
+        <span>{isSpread ? `${favAbbr} -${items[0].point}` : items[0].point}</span>
+        <span>{isSpread ? (items[items.length-1].point < 0 ? `${undAbbr} -${Math.abs(items[items.length-1].point)}` : `${undAbbr} +${items[items.length-1].point}`) : items[items.length-1].point}</span>
+      </div>
+    </div>
+  );
+}
+
+function StatRow({label, valA, valB, suffix="", isCount=false, inverse=false}) {
+  const nA=parseFloat(valA)||0, nB=parseFloat(valB)||0;
+  const max=Math.max(nA,nB,0.1);
+  const barA=isCount?(nA/max*100):Math.min(nA,100);
+  const barB=isCount?(nB/max*100):Math.min(nB,100);
+  const dA=valA===null?"N/A":valA+suffix;
+  const dB=valB===null?"N/A":valB+suffix;
+  let aW=false,bW=false;
+  if(valA!==null&&valB!==null){
+    if(inverse){if(nA>nB)aW=true;else if(nB>nA)bW=true;else{aW=true;bW=true;}}
+    else{if(nA>nB)aW=true;else if(nB>nA)bW=true;else{aW=true;bW=true;}}
+  }
+  const grnC='var(--acc)',dkW='#ddd';
+  return (
+    <div className="ts-row" style={{background:aW||bW?`linear-gradient(90deg,${aW?'rgba(0,255,170,0.08)':'transparent'},var(--bg2) 40%,var(--bg2) 60%,${bW?'rgba(0,255,170,0.08)':'transparent'})`:'var(--bg2)'}}>
+      <div className="ts-val l">
+        <span style={{color:aW?grnC:dkW,fontWeight:aW?800:700}}>{dA}</span>
+        <div className="ts-bar-wrap l"><div className="ts-bar" style={{width:(valA===null?0:barA)+'%',background:aW?grnC:'var(--t3)',opacity:aW?0.9:0.4}}/></div>
+      </div>
+      <div className="ts-lbl">{label}</div>
+      <div className="ts-val r">
+        <div className="ts-bar-wrap"><div className="ts-bar" style={{width:(valB===null?0:barB)+'%',background:bW?grnC:'var(--t3)',opacity:bW?0.9:0.4}}/></div>
+        <span style={{color:bW?grnC:dkW,fontWeight:bW?800:700}}>{dB}</span>
+      </div>
+    </div>
+  );
+}
+
+function GLRow({g, team, line, ptsLine, qMode, teamIsFav}) {
+  const isH=g.t1===team;
+  const s=getScores(g,team,qMode);
+  const m=s.scored-s.conceded;
+  const opp=isH?g.t2:g.t1;
+  const res=m>0?'W':m<0?'L':'D';
+  const resC=res==='W'?'var(--acc)':res==='L'?'#ef4444':'#eab308';
+  let mC='var(--t1)';
+  if(line!==0){
+    const absLine=Math.abs(line);
+    const lineFlipped=line<0;
+    const isFavAtLine=lineFlipped?!teamIsFav:teamIsFav;
+    const cov=isFavAtLine?(m>absLine):(m>-absLine);
+    mC=cov?'var(--acc)':'#ef4444';
+  }
+  const pC=(ptsLine>0&&s.total>ptsLine)?'var(--acc)':(ptsLine>0?'#ef4444':'var(--t1)');
+  const os=TEAM_STYLES[opp];
+  const oa=ABBREV[opp]||opp.substring(0,3);
+  return (
+    <tr>
+      <td>{g.y}</td>
+      <td>{g.rd}</td>
+      <td><span className="tbadge" style={{background:os?os.bg:'#333',color:os?os.txt:'#fff'}}>{oa}</span></td>
+      <td style={{color:resC,fontWeight:700}}>{res} <span className="gl-score">{s.scored}-{s.conceded}</span></td>
+      <td>{g.v||'-'}</td>
+      <td style={{color:mC,fontWeight:600}}>{m>0?'+'+m:m}</td>
+      <td style={{color:pC,fontWeight:600}}>{s.total}</td>
+    </tr>
+  );
+}
+
+function FormDots({team}) {
+  const form=useMemo(()=>{
+    const tg=D.results.filter(r=>r.t1===team||r.t2===team);
+    return tg.slice(-5).map(g=>{
+      const isH=g.t1===team;
+      const sc=isH?g.hft:g.aft, co=isH?g.aft:g.hft;
+      return sc>co?'W':sc<co?'L':'D';
+    });
+  },[team]);
+  const cm={W:'var(--acc)',L:'#ef4444',D:'#eab308'};
+  return (
+    <div className="form-dots">
+      {form.map((r,i)=>(<div key={i} className="form-dot" style={{background:cm[r]||'#555'}}>{r}</div>))}
+    </div>
+  );
+}
+
+function Streaks({game, oddsData, mainTab}) {
+  const [openTeam,setOpenTeam]=useState(true);
+  const [openPlayer,setOpenPlayer]=useState(true);
+  const [expSet,setExpSet]=useState({});
+
+  const {teamStreaks, playerStreaks} = useMemo(()=>{
+    const tItems=[], pItems=[];
+    const tA=game.home,tB=game.away;
+    const lh=oddsData?oddsData.spread:0;
+    const ph=oddsData?oddsData.total:0;
+    const venUp=(game.venueShort||'').toUpperCase();
+
+    function activeStreak(arr,fn){let c=0;for(let i=0;i<arr.length;i++){if(fn(arr[i]))c++;else break;}return c;}
+    const sortD=(arr)=>[...arr].sort((a,b)=>(b.ds||0)-(a.ds||0));
+
+    [tA,tB].forEach(team=>{
+      const tg=sortD(D.results.filter(r=>r.t1===team||r.t2===team));
+      const abbr=ABBREV[team]||team;
+      const ts=TEAM_STYLES[team]||{};
+      function tr(g){
+        const isH=g.t1===team;
+        const sc=isH?g.hft:g.aft,co=isH?g.aft:g.hft;
+        return{scored:sc,conc:co,margin:sc-co,tp:sc+co,isWin:sc>co,isLoss:sc<co,isFav:g.fav===team};
+      }
+      const allR=tg.map(g=>({...g,...tr(g)}));
+      // Determine if this team is favourite in THIS game
+      const teamIsFavThisGame = oddsData && oddsData.fav === team;
+      const teamIsUndThisGame = oddsData && oddsData.und === team;
+      const ctxs=[
+        {label:'All Games',games:allR},
+        {label:'H2H',games:sortD(D.results.filter(r=>(r.t1===tA&&r.t2===tB)||(r.t1===tB&&r.t2===tA))).map(g=>({...g,...tr(g)}))},
+        ...(teamIsFavThisGame?[{label:'As Favourite',games:allR.filter(g=>g.isFav)}]:[]),
+        ...(teamIsUndThisGame?[{label:'As Underdog',games:allR.filter(g=>!g.isFav&&g.fav)}]:[]),
+        ...(venUp?[{label:'At '+game.venueShort,games:tg.filter(r=>r.v&&r.v.toUpperCase()===venUp).map(g=>({...g,...tr(g)}))}]:[]),
+      ];
+      ctxs.forEach(ctx=>{
+        const minS=5;
+        if(ctx.games.length<minS)return;
+        const ws=activeStreak(ctx.games,g=>g.isWin);
+        if(ws>=minS) tItems.push({team:abbr,teamKey:team,streak:ws,desc:`Win streak (${ctx.label})`,games:ctx.games.slice(0,ws),color:'#22c55e'});
+        const ls=activeStreak(ctx.games,g=>g.isLoss);
+        if(ls>=minS) tItems.push({team:abbr,teamKey:team,streak:ls,desc:`Losing streak (${ctx.label})`,games:ctx.games.slice(0,ls),color:'#ef4444'});
+        if(lh>0){
+          const lcs=activeStreak(ctx.games,g=>{const iF=g.fav===team;return(iF&&g.margin>lh)||(!iF&&g.margin>-lh);});
+          if(lcs>=minS) tItems.push({team:abbr,teamKey:team,streak:lcs,desc:`Line cover streak (${ctx.label})`,games:ctx.games.slice(0,lcs),color:'#22c55e',stype:'line'});
+          const lfs=activeStreak(ctx.games,g=>{const iF=g.fav===team;return!((iF&&g.margin>lh)||(!iF&&g.margin>-lh));});
+          if(lfs>=minS) tItems.push({team:abbr,teamKey:team,streak:lfs,desc:`Line fail streak (${ctx.label})`,games:ctx.games.slice(0,lfs),color:'#ef4444',stype:'line'});
+        }
+        if(ph>0){
+          const pos=activeStreak(ctx.games,g=>g.tp>ph);
+          if(pos>=minS) tItems.push({team:abbr,teamKey:team,streak:pos,desc:`Pts over streak (${ctx.label})`,games:ctx.games.slice(0,pos),color:'#22c55e',stype:'total'});
+          const pus=activeStreak(ctx.games,g=>g.tp<=ph);
+          if(pus>=minS) tItems.push({team:abbr,teamKey:team,streak:pus,desc:`Pts under streak (${ctx.label})`,games:ctx.games.slice(0,pus),color:'#ef4444',stype:'total'});
+        }
+      });
+    });
+
+    // Player streaks - only include those with matching odds
+    const gameTeams = [game.home, game.away];
+    let teamPlayers = D.teamList.filter(p => gameTeams.includes(p.team));
+    if (!teamPlayers.length) {
+      const opKey = `${tA}|${tB}`;
+      const op = D.oddsPlayers[opKey];
+      if (op) {
+        const hp = (op.home||[]).map(n => ({name:n, team:tA, pos_short:''}));
+        const ap = (op.away||[]).map(n => ({name:n, team:tB, pos_short:''}));
+        teamPlayers = [...hp, ...ap];
+      }
+    }
+    const goalMs = [{m:1,l:'1+ Goals',ok:'goals_over'},{m:2,l:'2+ Goals',ok:'goals_over'},{m:3,l:'3+ Goals',ok:'goals_over'},{m:4,l:'4+ Goals',ok:'goals_over'}];
+    const dispMs = [{m:15,l:'15+ Disp',ok:'disposals_over'},{m:20,l:'20+ Disp',ok:'disposals_over'},{m:25,l:'25+ Disp',ok:'disposals_over'},{m:30,l:'30+ Disp',ok:'disposals_over'}];
+    const fantMs = [{m:80,l:'80+ AF',ok:'fantasy_over'},{m:90,l:'90+ AF',ok:'fantasy_over'},{m:100,l:'100+ AF',ok:'fantasy_over'},{m:110,l:'110+ AF',ok:'fantasy_over'}];
+
+    teamPlayers.forEach(p => {
+      const pd = D.playerData[p.name];
+      if (!pd || !pd.games.length) return;
+      const games = [...pd.games];
+
+      goalMs.forEach(({m,l,ok}) => {
+        const oddsObj = D.playerOdds[p.name]?.[ok]?.[m];
+        if (!oddsObj || !oddsObj.length) return;
+        const buildLast10 = (gArr, streakLen, ms, st) => {
+          const showLen = Math.max(10, streakLen);
+          const l10 = gArr.slice(0,showLen);
+          const si = new Set(Array.from({length:streakLen}, (_,i)=>i));
+          return l10.map((g,i)=>({year:g.year,opp:ABBREV[g.opponent]||g.opponent.substring(0,4),opponent:g.opponent,venue:g.venue||'',goals:g.goals,disp:g.disposals,pctPlayed:g.pct_played,isStreak:si.has(i)}));
+        };
+
+        // All games context
+        const sAll = activeStreak(games, g => g.goals >= m);
+        if (sAll >= 5) {
+          pItems.push({player:p.name,teamKey:p.team,streak:sAll,desc:`${l} streak`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'goals',
+            last10:buildLast10(games,sAll,m,'goals')});
+        }
+        // H2H context - only games vs the opponent team
+        const oppTeam = p.team === tA ? tB : tA;
+        const h2hGames = games.filter(g => g.opponent === oppTeam);
+        if (h2hGames.length >= 5) {
+          const sH2H = activeStreak(h2hGames, g => g.goals >= m);
+          if (sH2H >= 5) {
+            pItems.push({player:p.name,teamKey:p.team,streak:sH2H,desc:`${l} streak (vs ${ABBREV[oppTeam]||oppTeam})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'goals',
+              last10:buildLast10(h2hGames,sH2H,m,'goals')});
+          }
+        }
+        // Venue context
+        if (venUp) {
+          const venGames = games.filter(g => g.venue && g.venue.toUpperCase() === venUp);
+          if (venGames.length >= 5) {
+            const sVen = activeStreak(venGames, g => g.goals >= m);
+            if (sVen >= 5) {
+              pItems.push({player:p.name,teamKey:p.team,streak:sVen,desc:`${l} streak (at ${game.venueShort})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'goals',
+                last10:buildLast10(venGames,sVen,m,'goals')});
+            }
+          }
+        }
+      });
+      dispMs.forEach(({m,l,ok}) => {
+        const oddsObj = D.playerOdds[p.name]?.[ok]?.[m];
+        if (!oddsObj || !oddsObj.length) return;
+        const buildLast10d = (gArr, streakLen) => {
+          const showLen = Math.max(10, streakLen);
+          const l10 = gArr.slice(0,showLen);
+          const si = new Set(Array.from({length:streakLen}, (_,i)=>i));
+          return l10.map((g,i)=>({year:g.year,opp:ABBREV[g.opponent]||g.opponent.substring(0,4),opponent:g.opponent,venue:g.venue||'',goals:g.goals,disp:g.disposals,pctPlayed:g.pct_played,isStreak:si.has(i)}));
+        };
+        // All games
+        const sAll = activeStreak(games, g => g.disposals >= m);
+        if (sAll >= 5) {
+          pItems.push({player:p.name,teamKey:p.team,streak:sAll,desc:`${l} streak`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'disposals',
+            last10:buildLast10d(games,sAll)});
+        }
+        // H2H context - only games vs the opponent team
+        const oppTeamD = p.team === tA ? tB : tA;
+        const h2hGames = games.filter(g => g.opponent === oppTeamD);
+        if (h2hGames.length >= 5) {
+          const sH2H = activeStreak(h2hGames, g => g.disposals >= m);
+          if (sH2H >= 5) {
+            pItems.push({player:p.name,teamKey:p.team,streak:sH2H,desc:`${l} streak (vs ${ABBREV[oppTeamD]||oppTeamD})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'disposals',
+              last10:buildLast10d(h2hGames,sH2H)});
+          }
+        }
+        // Venue context
+        if (venUp) {
+          const venGames = games.filter(g => g.venue && g.venue.toUpperCase() === venUp);
+          if (venGames.length >= 5) {
+            const sVen = activeStreak(venGames, g => g.disposals >= m);
+            if (sVen >= 5) {
+              pItems.push({player:p.name,teamKey:p.team,streak:sVen,desc:`${l} streak (at ${game.venueShort})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'disposals',
+                last10:buildLast10d(venGames,sVen)});
+            }
+          }
+        }
+      });
+      fantMs.forEach(({m,l,ok}) => {
+        const oddsObj = D.playerOdds[p.name]?.[ok]?.[m];
+        if (!oddsObj || !oddsObj.length) return;
+        const buildLast10f = (gArr, streakLen) => {
+          const showLen = Math.max(10, streakLen);
+          const l10 = gArr.slice(0,showLen);
+          const si = new Set(Array.from({length:streakLen}, (_,i)=>i));
+          return l10.map((g,i)=>({year:g.year,opp:ABBREV[g.opponent]||g.opponent.substring(0,4),opponent:g.opponent,venue:g.venue||'',goals:g.goals,disp:g.disposals,fantasy:g.fantasy||0,pctPlayed:g.pct_played,isStreak:si.has(i)}));
+        };
+        const sAll = activeStreak(games, g => (g.fantasy||0) >= m);
+        if (sAll >= 5) {
+          pItems.push({player:p.name,teamKey:p.team,streak:sAll,desc:`${l} streak`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'fantasy',
+            last10:buildLast10f(games,sAll)});
+        }
+        const oppTeamF = p.team === tA ? tB : tA;
+        const h2hGames = games.filter(g => g.opponent === oppTeamF);
+        if (h2hGames.length >= 5) {
+          const sH2H = activeStreak(h2hGames, g => (g.fantasy||0) >= m);
+          if (sH2H >= 5) {
+            pItems.push({player:p.name,teamKey:p.team,streak:sH2H,desc:`${l} streak (vs ${ABBREV[oppTeamF]||oppTeamF})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'fantasy',
+              last10:buildLast10f(h2hGames,sH2H)});
+          }
+        }
+        if (venUp) {
+          const venGames = games.filter(g => g.venue && g.venue.toUpperCase() === venUp);
+          if (venGames.length >= 5) {
+            const sVen = activeStreak(venGames, g => (g.fantasy||0) >= m);
+            if (sVen >= 5) {
+              pItems.push({player:p.name,teamKey:p.team,streak:sVen,desc:`${l} streak (at ${game.venueShort})`,color:'#22c55e',odds:oddsObj,milestone:m,stat:'fantasy',
+                last10:buildLast10f(venGames,sVen)});
+            }
+          }
+        }
+      });
+    });
+
+    tItems.sort((a,b)=>b.streak-a.streak);
+    // Filter player streaks: best odds must be >= $1.40
+    const filteredP = pItems.filter(s => {
+      if (!s.odds || !s.odds.length) return false;
+      const best = s.odds.reduce((a,b) => b.price > a.price ? b : a, s.odds[0]);
+      return best.price >= 1.40;
+    });
+    filteredP.sort((a,b)=>b.streak-a.streak);
+    return {teamStreaks: tItems, playerStreaks: filteredP};
+  },[game,oddsData]);
+
+  const togExp = (idx) => setExpSet(prev => {const n={...prev}; if(n[idx]) delete n[idx]; else n[idx]=true; return n;});
+
+  const renderCard = (s, i, isPlayer) => {
+    const idx = isPlayer ? 'p'+i : 't'+i;
+    const isE = !!expSet[idx];
+    const ts = TEAM_STYLES[s.teamKey] || {};
+    return (
+      <div key={idx} onClick={()=>togExp(idx)} className={"streak-card"+(isE?" exp":"")} style={{borderColor:isE?s.color:undefined}}>
+        <div className="streak-inner">
+          {isPlayer && D.photos[s.player] ? (
+            <div className="streak-photo" style={{background:ts.bg}}>
+              <img src={D.photos[s.player]} alt="" />
+            </div>
+          ) : !isPlayer && D.logos[s.teamKey] ? (
+            <div className="streak-photo" style={{background:ts.bg,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <img src={D.logos[s.teamKey]} alt="" style={{width:'60%',height:'60%',objectFit:'contain',position:'relative'}} />
+            </div>
+          ) : null}
+          <div className="streak-info">
+            <div style={{display:'flex',alignItems:'center',gap:6}}>
+              <span style={{fontSize:14}}>{'\u{1F525}'}{s.streak}</span>
+              {isPlayer ? (
+                <span style={{fontSize:12,fontWeight:700,display:'flex',flexDirection:'column',gap:1}}>
+                  <span style={{color:'white'}}>{s.player}</span>
+                  <span style={{background:ts.bg,color:ts.txt,padding:'1px 5px',borderRadius:4,fontSize:9,fontWeight:700,alignSelf:'flex-start'}}>{ABBREV[s.teamKey]||s.teamKey}</span>
+                </span>
+              ) : (
+                <span style={{background:ts.bg,color:ts.txt,padding:'2px 8px',borderRadius:5,fontSize:12,fontWeight:700}}>{s.team}</span>
+              )}
+            </div>
+            <div style={{fontSize:11,color:'var(--t2)',marginTop:3}}>{s.desc}</div>
+            {isPlayer && s.odds && s.odds[0] && (() => {
+              const best = s.odds.reduce((a,b) => b.price > a.price ? b : a, s.odds[0]);
+              return <div style={{fontSize:10,color:'var(--acc)',marginTop:2}}>${best.price.toFixed(2)} <span style={{opacity:.7}}>({best.bookie})</span></div>;
+            })()}
+          </div>
+        </div>
+        {isE && !isPlayer && s.games && (
+          <div onClick={e=>e.stopPropagation()} style={{marginTop:8,maxHeight:s.games.length>10?240:undefined,overflowY:s.games.length>10?'auto':'visible'}}>
+            <table className="gl-tbl" style={{fontSize:10}}>
+              <thead><tr><th>Yr</th><th>Rd</th><th>Opp</th><th>Result</th>{s.stype==='line'&&<th>Margin</th>}{s.stype==='total'&&<th>Pts</th>}</tr></thead>
+              <tbody>
+                {s.games.map((g,j)=>{
+                  const isH=g.t1===s.teamKey;
+                  const opp=isH?g.t2:g.t1;
+                  const oppTS=TEAM_STYLES[opp]||{};
+                  return (
+                    <tr key={j}>
+                      <td>{g.y}</td><td>{g.rd}</td>
+                      <td><span style={{background:oppTS.bg,color:oppTS.txt,padding:'1px 4px',borderRadius:3,fontSize:9}}>{ABBREV[opp]||opp.substring(0,3)}</span></td>
+                      <td style={{color:g.isWin?'var(--acc)':g.isLoss?'#ef4444':'#eab308',fontWeight:700}}>
+                        {g.isWin?'W':g.isLoss?'L':'D'} {g.scored}-{g.conc}
+                      </td>
+                      {s.stype==='line'&&<td style={{fontWeight:700,color:g.margin>0?'var(--acc)':'#ef4444'}}>{g.margin>0?'+':''}{g.margin}</td>}
+                      {s.stype==='total'&&<td style={{fontWeight:700,color:'var(--acc)'}}>{g.tp}</td>}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {isE && isPlayer && s.last10 && (
+          <div onClick={e=>e.stopPropagation()} style={{marginTop:8,maxHeight:s.last10.length>10?240:undefined,overflowY:s.last10.length>10?'auto':'visible'}}>
+            <table className="gl-tbl" style={{fontSize:10}}>
+              <thead><tr><th>Yr</th><th>Opp</th><th>Venue</th><th style={{textAlign:'center'}}>{s.stat==='goals'?'G':s.stat==='fantasy'?'AF':'D'}</th></tr></thead>
+              <tbody>
+                {s.last10.map((g,j)=>{
+                  const oppTeam = g.opponent;
+                  const oppTS = TEAM_STYLES[oppTeam]||{};
+                  const statVal = s.stat==='goals'?g.goals:s.stat==='fantasy'?(g.fantasy||0):g.disp;
+                  const isMilestone = statVal >= s.milestone;
+                  const statColor = isMilestone?'var(--acc)':'#ef4444';
+                  const rowBg = g.isStreak?'rgba(34,197,94,0.05)':'transparent';
+                  return (
+                    <tr key={j} style={{background:rowBg}}>
+                      <td>{g.year}</td>
+                      <td><span style={{background:oppTS.bg,color:oppTS.txt,padding:'1px 4px',borderRadius:3,fontSize:9}}>{g.opp}</span></td>
+                      <td style={{fontSize:9,color:'var(--t2)'}}>{g.venue}</td>
+                      <td style={{color:statColor,fontWeight:700,textAlign:'center'}}>{statVal}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const hasTeam = teamStreaks.length > 0;
+  const hasPlayer = playerStreaks.length > 0;
+  const showTeam = mainTab === 'team' && hasTeam;
+  const showPlayer = mainTab === 'player' && hasPlayer;
+  if (!showTeam && !showPlayer) return null;
+
+  return (
+    <div className="sec">
+      {showTeam && (
+        <>
+          <div className="stit" onClick={()=>setOpenTeam(!openTeam)}>
+            <span>{'\u{1F525}'} Team Streaks</span>
+            <span className={"arr"+(openTeam?" open":"")}>&#9660;</span>
+          </div>
+          {openTeam && (
+            <div style={{display:'flex',flexWrap:'nowrap',gap:8,overflowX:'auto',paddingBottom:6,WebkitOverflowScrolling:'touch'}}>
+              {teamStreaks.map((s,i) => renderCard(s, i, false))}
+            </div>
+          )}
+        </>
+      )}
+      {showPlayer && (
+        <>
+          <div className="stit" onClick={()=>setOpenPlayer(!openPlayer)}>
+            <span>{'\u{1F525}'} Player Streaks</span>
+            <span className={"arr"+(openPlayer?" open":"")}>&#9660;</span>
+          </div>
+          {openPlayer && (
+            <div style={{display:'flex',flexWrap:'nowrap',gap:8,overflowX:'auto',paddingBottom:6,WebkitOverflowScrolling:'touch'}}>
+              {playerStreaks.map((s,i) => renderCard(s, i, true))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function TeamStats({game, oddsData}) {
+  const [open,setOpen]=useState(true);
+  const [factors,setFactors]=useState(['all']);
+  const [period,setPeriod]=useState('2026');
+  const [qMode,setQMode]=useState('total');
+  const [showLineSlider,setShowLineSlider]=useState(false);
+  const [showPtsSlider,setShowPtsSlider]=useState(false);
+  const [overrideLine,setOverrideLine]=useState(null);
+  const [overridePts,setOverridePts]=useState(null);
+  const [showHomeTT,setShowHomeTT]=useState(false);
+  const [showAwayTT,setShowAwayTT]=useState(false);
+
+  const toggleFactor=useCallback((f)=>{
+    setFactors(prev=>{
+      if(f==='all') return ['all'];
+      let next=prev.filter(x=>x!=='all');
+      if(next.includes(f)) next=next.filter(x=>x!==f);
+      else next.push(f);
+      return next.length===0?['all']:next;
+    });
+  },[]);
+
+  const filtered=useMemo(()=>{
+    let gA=D.results.filter(r=>r.t1===game.home||r.t2===game.home);
+    let gB=D.results.filter(r=>r.t1===game.away||r.t2===game.away);
+    factors.forEach(factor=>{
+      if(factor==='h2h'){
+        const h2h=D.results.filter(r=>(r.t1===game.home&&r.t2===game.away)||(r.t1===game.away&&r.t2===game.home));
+        gA=gA.filter(g=>h2h.includes(g));
+        gB=gB.filter(g=>h2h.includes(g));
+      } else if(factor==='venue'){
+        const gv=(game.venueShort||'').toUpperCase();
+        if(gv){gA=gA.filter(r=>r.v&&r.v.toUpperCase()===gv);gB=gB.filter(r=>r.v&&r.v.toUpperCase()===gv);}
+      } else if(factor==='wet'){
+        gA=gA.filter(r=>r.cond==='WET');gB=gB.filter(r=>r.cond==='WET');
+      } else if(factor==='favund'&&oddsData){
+        const fav=oddsData.fav;
+        if(fav===game.home){
+          gA=gA.filter(r=>r.fav===game.home);
+          gB=gB.filter(r=>r.fav!==game.away&&(r.t1===game.away||r.t2===game.away));
+        } else {
+          gA=gA.filter(r=>r.fav!==game.home&&(r.t1===game.home||r.t2===game.home));
+          gB=gB.filter(r=>r.fav===game.away);
+        }
+      } else if(factor==='dow'){
+        const dw=game.day;
+        gA=gA.filter(r=>r.dow===dw);gB=gB.filter(r=>r.dow===dw);
+      } else if(factor==='daynight'){
+        const dn=game.tod;
+        gA=gA.filter(r=>r.tod===dn);gB=gB.filter(r=>r.tod===dn);
+      }
+    });
+    if(period==='last10y'){gA=gA.filter(r=>r.y>=2016);gB=gB.filter(r=>r.y>=2016);}
+    else if(period==='last3y'){gA=gA.filter(r=>r.y>=2023);gB=gB.filter(r=>r.y>=2023);}
+    else if(period==='2026'){gA=gA.filter(r=>r.y===2026);gB=gB.filter(r=>r.y===2026);}
+    else if(period==='last10g'){
+      const srt=(a)=>[...a].sort((x,y)=>(y.ds||0)-(x.ds||0));
+      gA=srt(gA).slice(0,10);gB=srt(gB).slice(0,10);
+    }
+    return {a:gA,b:gB};
+  },[game,factors,period,oddsData]);
+
+  const baseOdds = getEffectiveOdds(oddsData, qMode);
+  const line = overrideLine !== null ? overrideLine : baseOdds.line;
+  const ptsLine = overridePts !== null ? overridePts : baseOdds.ptsLine;
+  const ttKey = qMode==='total'?'teamTotals':('teamTotals'+qMode.charAt(0).toUpperCase()+qMode.slice(1));
+  const ttData = oddsData?.[ttKey] || oddsData?.teamTotals || {};
+  const homeTeamTotalPt = ttData[game.home]?.point || 0;
+  const awayTeamTotalPt = ttData[game.away]?.point || 0;
+  const homeIsFav = oddsData ? oddsData.fav === game.home : false;
+  const statsA=useMemo(()=>computeTeamStats(game.home,filtered.a,line,ptsLine,qMode,homeIsFav,homeTeamTotalPt,awayTeamTotalPt),[game,filtered.a,line,ptsLine,qMode,homeIsFav,homeTeamTotalPt,awayTeamTotalPt]);
+  const statsB=useMemo(()=>computeTeamStats(game.away,filtered.b,line,ptsLine,qMode,!homeIsFav,awayTeamTotalPt,homeTeamTotalPt),[game,filtered.b,line,ptsLine,qMode,homeIsFav,awayTeamTotalPt,homeTeamTotalPt]);
+
+  const glA=useMemo(()=>{
+    const s=[...filtered.a].sort((a,b)=>(b.ds||0)-(a.ds||0));
+    return s.slice(0,50);
+  },[filtered.a]);
+  const glB=useMemo(()=>{
+    const s=[...filtered.b].sort((a,b)=>(b.ds||0)-(a.ds||0));
+    return s.slice(0,50);
+  },[filtered.b]);
+
+  const getHeader=(tn)=>{
+    let h=ABBREV[tn]||tn;
+    factors.forEach(f=>{
+      if(f==='h2h') h+=` vs ${ABBREV[tn===game.home?game.away:game.home]}`;
+      else if(f==='venue') h+=` at ${game.venueShort}`;
+      else if(f==='wet') h+=' Wet';
+      else if(f==='favund'&&oddsData) h+=(oddsData.fav===tn?' as Fav':' as Und');
+      else if(f==='dow') h+=` ${game.day}`;
+      else if(f==='daynight') h+=` ${game.tod}`;
+    });
+    if(period==='2026') h+=' 2026';
+    else if(period==='last3y') h+=' Last 3 Yrs';
+    else if(period==='last10y') h+=' Last 10 Yrs';
+    else if(period==='since2012') h+=' Since 2012';
+    else if(period==='last10g') h+=' Last 10';
+    if(qMode!=='total') h+=` (${qMode.toUpperCase()})`;
+    return h;
+  };
+
+  const fList=[['all','All Games'],['h2h','H2H'],['venue','Venue'],['wet','Wet'],['favund','Fav/Und'],['dow',game.day||'Day'],['daynight',game.tod||'Day/Night']];
+  const pList=[['since2012','Since 2012'],['last10y','Last 10 Yrs'],['last3y','Last 3 Yrs'],['2026','2026'],['last10g','Last 10']];
+  const qList=[['total','Total'],['q1','Q1'],['q2','Q2'],['q3','Q3'],['q4','Q4']];
+  const hS=TEAM_STYLES[game.home]||{};
+  const aS=TEAM_STYLES[game.away]||{};
+  const isQtr = qMode !== 'total';
+
+  return (
+    <div className="sec">
+      <div className="stit" onClick={()=>setOpen(!open)}>
+        <span>Team Stats Comparison</span>
+        <span className={"arr"+(open?" open":"")}>&#9660;</span>
+      </div>
+      {open&&(
+        <>
+          <div className="cr">
+            <div className="cl">Factor</div>
+            <div className="tg">
+              {fList.map(([v,l])=>(<button key={v} className={"tb"+(factors.includes(v)?" on":"")} onClick={()=>toggleFactor(v)}>{l}</button>))}
+            </div>
+          </div>
+          <div className="cr">
+            <div className="cl">Period</div>
+            <div className="tg">
+              {pList.map(([v,l])=>(<button key={v} className={"tb"+(period===v?" on":"")} onClick={()=>setPeriod(v)}>{l}</button>))}
+            </div>
+          </div>
+          <div className="cr">
+            <div className="cl">Quarter</div>
+            <div className="tg">
+              {qList.map(([v,l])=>(<button key={v} className={"tb"+(qMode===v?" on":"")} onClick={()=>setQMode(v)}>{l}</button>))}
+            </div>
+          </div>
+
+          <div className="ts-hdr">
+            <div className="ts-tn l" style={{color:hS.txt,background:hS.bg,padding:'2px 8px',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'flex-end',gap:6}}>{ABBREV[game.home]}{D.logos[game.home] && <img src={D.logos[game.home]} className="team-logo" alt="" />}</div>
+            <div className="ts-tn c">STAT</div>
+            <div className="ts-tn r" style={{color:aS.txt,background:aS.bg,padding:'2px 8px',borderRadius:4,display:'flex',alignItems:'center',gap:6}}>{D.logos[game.away] && <img src={D.logos[game.away]} className="team-logo" alt="" />}{ABBREV[game.away]}</div>
+          </div>
+          <div className="ts-grid">
+            <StatRow label="Games" valA={statsA.games} valB={statsB.games} isCount={true}/>
+            <StatRow label="Win %" valA={statsA.winPct} valB={statsB.winPct} suffix="%"/>
+            {line!==0&&<>
+              <div style={{cursor:'pointer'}} onClick={()=>setShowLineSlider(!showLineSlider)}>
+                <StatRow label={`Line ${Math.abs(line)}`} valA={statsA.linePct} valB={statsB.linePct} suffix="%"/>
+              </div>
+              {showLineSlider && oddsData && oddsData.altSpreads && oddsData.altSpreads.length > 0 && (
+                <OddsSlider items={oddsData.altSpreads} label="spread" favTeam={oddsData.fav} undTeam={oddsData.und} homeTeam={game.home} favStyle={TEAM_STYLES[oddsData.fav]||{}} undStyle={TEAM_STYLES[oddsData.und]||{}} currentVal={baseOdds.line} onChange={(v) => setOverrideLine(v)} />
+              )}
+            </>}
+            {ptsLine>0&&<>
+              <div style={{cursor:'pointer'}} onClick={()=>setShowPtsSlider(!showPtsSlider)}>
+                <StatRow label={`Pts O/U ${ptsLine}`} valA={statsA.ptsPct} valB={statsB.ptsPct} suffix="%"/>
+              </div>
+              {showPtsSlider && oddsData && oddsData.altTotals && oddsData.altTotals.length > 0 && (
+                <OddsSlider items={oddsData.altTotals} label="total" favTeam={oddsData.fav} undTeam={oddsData.und} homeTeam={game.home} favStyle={hS} undStyle={aS} currentVal={baseOdds.ptsLine} onChange={(v) => setOverridePts(v)} />
+              )}
+            </>}
+            {!isQtr && (
+              <>
+                <StatRow label="40+ Wins" valA={statsA.w40} valB={statsB.w40} suffix="%"/>
+                <StatRow label="1-39 Wins" valA={statsA.w139} valB={statsB.w139} suffix="%"/>
+                <StatRow label="1-39 Losses" valA={statsA.l139} valB={statsB.l139} suffix="%" inverse={true}/>
+                <StatRow label="40+ Losses" valA={statsA.l40} valB={statsB.l40} suffix="%" inverse={true}/>
+              </>
+            )}
+            {oddsData&&(()=>{
+              const ttKey = qMode==='total'?'teamTotals':('teamTotals'+qMode.charAt(0).toUpperCase()+qMode.slice(1));
+              const ttData = oddsData[ttKey]||oddsData.teamTotals||{};
+              const homeTT = ttData[game.home];
+              const awayTT = ttData[game.away];
+              return <>
+                {homeTT&&<>
+                  <div style={{cursor:'pointer'}} onClick={()=>setShowHomeTT(!showHomeTT)}>
+                    <StatRow label={ABBREV[game.home]+' O '+homeTT.point+' PTS'} valA={statsA.ttPct!=null?statsA.ttPct:'-'} valB={statsB.ttConcPct!=null?statsB.ttConcPct:'-'} suffix="%"/>
+                  </div>
+                  {showHomeTT&&oddsData.altTeamTotals&&oddsData.altTeamTotals[game.home]&&(
+                    <OddsSlider items={oddsData.altTeamTotals[game.home]} label="total" favTeam={game.home} undTeam={game.away} homeTeam={game.home} favStyle={hS} undStyle={aS} currentVal={homeTT.point} onChange={()=>{}} />
+                  )}
+                </>}
+                {awayTT&&<>
+                  <div style={{cursor:'pointer'}} onClick={()=>setShowAwayTT(!showAwayTT)}>
+                    <StatRow label={ABBREV[game.away]+' O '+awayTT.point+' PTS'} valA={statsA.ttConcPct!=null?statsA.ttConcPct:'-'} valB={statsB.ttPct!=null?statsB.ttPct:'-'} suffix="%"/>
+                  </div>
+                  {showAwayTT&&oddsData.altTeamTotals&&oddsData.altTeamTotals[game.away]&&(
+                    <OddsSlider items={oddsData.altTeamTotals[game.away]} label="total" favTeam={game.home} undTeam={game.away} homeTeam={game.home} favStyle={hS} undStyle={aS} currentVal={awayTT.point} onChange={()=>{}} />
+                  )}
+                </>}
+              </>;
+            })()}
+          </div>
+          <div style={{marginTop:12}}>
+            <div className="stit" style={{fontSize:11,marginBottom:8}}><span>Game Log</span></div>
+            <div className="gl-split">
+              <div>
+                <div className="gl-col-hdr">{getHeader(game.home)} ({filtered.a.length})</div>
+                <div className="gl-wrap">
+                  <table className="gl-tbl">
+                    <thead><tr><th>Year</th><th>Rd</th><th>Opp</th><th>Result</th><th>Venue</th><th>Margin</th><th>Pts</th></tr></thead>
+                    <tbody>{glA.map((g,i)=><GLRow key={i} g={g} team={game.home} line={line} ptsLine={ptsLine} qMode={qMode} teamIsFav={homeIsFav}/>)}</tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <div className="gl-col-hdr" style={{textAlign:'right'}}>{getHeader(game.away)} ({filtered.b.length})</div>
+                <div className="gl-wrap">
+                  <table className="gl-tbl">
+                    <thead><tr><th>Year</th><th>Rd</th><th>Opp</th><th>Result</th><th>Venue</th><th>Margin</th><th>Pts</th></tr></thead>
+                    <tbody>{glB.map((g,i)=><GLRow key={i} g={g} team={game.away} line={line} ptsLine={ptsLine} qMode={qMode} teamIsFav={!homeIsFav}/>)}</tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+
+function PlayerModal({pl, game, initSubTab, initMilestone, initFactor, onClose}) {
+  const factorMap = {'all':'all','h2h':'h2h','venue':'venue','pos':'pos','wet':'wet'};
+  const [subTab, setSubTab] = useState(initSubTab || 'goals');
+  const [milestone, setMilestone] = useState(initMilestone || 1);
+  const [period, setPeriod] = useState('last10');
+  const [openFactor, setOpenFactor] = useState(factorMap[initFactor] || 'all');
+  const goalMs = [1,2,3,4,'first'];
+  const dispMs = [15,20,25,30];
+  const fantasyMs = [80,90,100,110];
+  const activeMs = subTab === 'goals' ? goalMs : subTab === 'disposals' ? dispMs : fantasyMs;
+
+  const isInitMount = React.useRef(true);
+  React.useEffect(() => {
+    if (isInitMount.current) { isInitMount.current = false; return; }
+    if (subTab === 'goals') setMilestone(1);
+    else if (subTab === 'disposals') setMilestone(15);
+    else if (subTab === 'fantasy') setMilestone(80);
+  }, [subTab]);
+
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const pd = D.playerData[pl.name];
+  if (!pd) return null;
+  const ts = TEAM_STYLES[pl.team] || {};
+  const oppTeam = pl.team === game.home ? game.away : game.home;
+  const position = pd.position || pl.pos_short || '';
+  const fullPos = pd.full_position || pl.position || pd.position || position;
+  const allGames = pd.games || [];
+  const photoUrl = D.photos[pl.name];
+  const teamAbbr = ABBREV[pl.team] || pl.team;
+  const oppAbbr = ABBREV[oppTeam] || oppTeam;
+
+  const oddsKey = subTab === 'goals' ? (milestone === 'first' ? 'first_goal' : 'goals_over') : subTab === 'disposals' ? 'disposals_over' : 'fantasy_over';
+  const poData = D.playerOdds[pl.name];
+  const allOdds = milestone === 'first' ? (poData?.first_goal || []) : (poData && poData[oddsKey] && poData[oddsKey][milestone]) || [];
+
+  const shortRound = (r) => {
+    if (!r) return '-';
+    const s = String(r).trim();
+    if (s === 'Opening Round' || s === 'Round Opening') return 'OR';
+    if (s === 'Elimination Final') return 'EF';
+    if (s === 'Semi Final') return 'SF';
+    if (s === 'Preliminary Final') return 'PF';
+    if (s === 'Qualifying Final') return 'QF';
+    if (s === 'Grand Final') return 'GF';
+    const m = s.match(/Round\s+(\d+)/i);
+    if (m) return m[1];
+    return s;
+  };
+
+  // Dynamic scorecards based on period
+  const periodGames = useMemo(() => {
+    let g = allGames;
+    if (period === 'last5') g = allGames.slice(0, 5);
+    else if (period === 'last10') g = allGames.slice(0, 10);
+    else if (period === '2026') g = allGames.filter(x => x.year === 2026);
+    return g;
+  }, [allGames, period]);
+  const totalGames = periodGames.length;
+  const avgPct = totalGames ? Math.round(periodGames.reduce((s,g) => s + (g.pct_played||0), 0) / totalGames) : 0;
+  const totalGoals = periodGames.reduce((s,g) => s + g.goals, 0);
+  const totalBehinds = periodGames.reduce((s,g) => s + (g.behinds||0), 0);
+  const avgDisp = totalGames ? (periodGames.reduce((s,g) => s + g.disposals, 0) / totalGames).toFixed(1) : '0.0';
+  const avgAFModal = totalGames ? (periodGames.reduce((s,g) => s + (g.fantasy||0), 0) / totalGames).toFixed(1) : '0.0';
+
+  const posRankKey = `${oppTeam}|${position}`;
+  const posRank = D.posRankings[posRankKey] || {};
+  const rankColor = (r) => !r ? 'var(--t3)' : r <= 6 ? 'var(--acc)' : r <= 12 ? '#eab308' : '#ef4444';
+  const rankBg = (r) => !r ? 'var(--bg2)' : r <= 6 ? 'rgba(0,212,160,.15)' : r <= 12 ? 'rgba(234,179,8,.15)' : 'rgba(239,68,68,.15)';
+
+  const getFilteredGames = (filterFn) => {
+    let games = filterFn(allGames);
+    if (period === 'last5') games = games.slice(0, 5);
+    else if (period === 'last10') games = games.slice(0, 10);
+    else if (period === '2026') games = games.filter(g => g.year === 2026);
+    return games;
+  };
+
+  const getSR = (games) => {
+    if (!games.length) return 0;
+    const hits = games.filter(g => {
+      if (subTab === 'goals' && milestone === 'first') return g.first_goal;
+      let val;
+      if (subTab === 'goals') val = g.goals;
+      else if (subTab === 'disposals') val = g.disposals;
+      else val = g.fantasy || 0;
+      return val >= milestone;
+    }).length;
+    return Math.round(hits / games.length * 100);
+  };
+
+  const parseTime = (t) => {
+    if (!t) return 0;
+    const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!m) return 0;
+    let h = parseInt(m[1]);
+    if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+    return h * 60 + parseInt(m[2]);
+  };
+
+  const gameTimeMin = parseTime(game.time);
+  const isNightGame = gameTimeMin >= 17 * 60;
+  const gameDay = game.day || '';
+
+  const factors = [
+    {id: 'all', name: 'All Games', fn: g => g},
+    {id: 'pos', name: `${fullPos} vs ${(() => {const nn = {'Adelaide':'Crows','Brisbane':'Lions','Carlton':'Blues','Collingwood':'Magpies','Essendon':'Bombers','Fremantle':'Dockers','Geelong':'Cats','Gold Coast':'Suns','Greater Western Sydney':'Giants','Hawthorn':'Hawks','Melbourne':'Demons','North Melbourne':'Kangaroos','Port Adelaide':'Power','Richmond':'Tigers','St Kilda':'Saints','Sydney':'Swans','West Coast':'Eagles','Western Bulldogs':'Bulldogs'}; return nn[oppTeam]||oppAbbr;})()}`, fn: () => {
+      const rows = [];
+      Object.keys(D.posLookup).forEach(key => {
+        const parts = key.split('|');
+        if (parts[1] === oppTeam && parts[3] === position) {
+          const pTeam = parts[0];
+          D.posLookup[key].forEach(op => rows.push({...op, playerTeam: pTeam, round: parts[2]}));
+        }
+      });
+      rows.sort((a,b) => (b.ds||0) - (a.ds||0));
+      return rows;
+    }, isPosMode: true},
+    {id: 'h2h', name: `vs ${(() => {const nn = {'Adelaide':'Crows','Brisbane':'Lions','Carlton':'Blues','Collingwood':'Magpies','Essendon':'Bombers','Fremantle':'Dockers','Geelong':'Cats','Gold Coast':'Suns','Greater Western Sydney':'Giants','Hawthorn':'Hawks','Melbourne':'Demons','North Melbourne':'Kangaroos','Port Adelaide':'Power','Richmond':'Tigers','St Kilda':'Saints','Sydney':'Swans','West Coast':'Eagles','Western Bulldogs':'Bulldogs'}; return nn[oppTeam]||oppAbbr;})()}`, fn: g => g.filter(x => x.opponent === oppTeam)},
+    {id: 'venue', name: `at ${game.venueShort || game.venue}`, fn: g => game.venueShort ? g.filter(x => x.venue === game.venueShort) : []},
+    {id: 'aspos', name: `as ${fullPos}`, fn: g => position ? g.filter(x => x.position === position) : g},
+    {id: 'dry', name: 'In Dry', fn: g => g.filter(x => x.conditions === 'DRY')},
+    {id: 'wet', name: 'In Wet', fn: g => g.filter(x => x.conditions === 'WET')},
+    {id: 'dow', name: `on ${gameDay}`, fn: g => g.filter(x => x.dow === gameDay)},
+    {id: 'daynight', name: `${game.tod || 'Day/Night'}`, fn: g => g.filter(x => x.tod === game.tod)},
+    {id: 'round', name: `Round ${game.rd || '?'}`, fn: g => g.filter(x => x.round === `Round ${game.rd}` || x.round === game.rd)},
+  ];
+
+  const statLabel = subTab === 'goals' ? 'goals' : 'disposals';
+  const srBg = (sr) => sr >= 70 ? 'rgba(0,212,160,.18)' : sr >= 40 ? 'rgba(234,179,8,.18)' : 'rgba(239,68,68,.18)';
+  const srColor = (sr) => sr >= 70 ? '#00d4a0' : sr >= 40 ? '#eab308' : '#ef4444';
+
+  const is2026 = period === '2026';
+  const isGoals = subTab === 'goals';
+
+  const isFantasy = subTab === 'fantasy';
+
+  const renderGameLog = (games, isPosMode) => {
+    if (!games.length) return <div style={{fontSize:10,color:'var(--t3)',padding:8}}>No games found</div>;
+    if (isPosMode) {
+      return (
+        <div className="modal-gl-wrap" style={{background:'#000'}}>
+          <table className="gl-tbl" style={{background:'#000'}}>
+            <thead style={{color:'var(--acc)'}}><tr><th>Team</th><th>Player</th><th>Rd</th>{isGoals?<><th>G</th><th>B</th><th>I50</th></>:isFantasy?<><th>AF</th><th>G</th><th>D</th></>:<><th>D</th><th>Ki</th><th>HB</th></>}<th>TOG%</th></tr></thead>
+            <tbody>
+              {games.map((op, j) => {
+                let gVal;
+                if (isGoals) gVal = op.g;
+                else if (isFantasy) gVal = op.f;
+                else gVal = op.d;
+                const hit = gVal >= milestone;
+                const pTeam = op.playerTeam || '';
+                const pTS = TEAM_STYLES[pTeam] || {};
+                const pAbbr = ABBREV[pTeam] || (pTeam ? pTeam.substring(0,3) : '');
+                return (
+                  <tr key={j}>
+                    <td>{pAbbr && <span style={{background:pTS.bg,color:pTS.txt,padding:'1px 4px',borderRadius:3,fontSize:8}}>{pAbbr}</span>}</td>
+                    <td style={{fontWeight:600,color:'var(--t1)',fontSize:10}}>{op.n}</td>
+                    <td>{shortRound(op.round)}</td>
+                    {isGoals?<>
+                      <td style={{color: hit ? 'var(--acc)' : '#ef4444', fontWeight:700}}>{op.g}</td>
+                      <td>{op.b}</td>
+                      <td>{op.m}</td>
+                    </>:isFantasy?<>
+                      <td style={{color: hit ? 'var(--acc)' : '#ef4444', fontWeight:700}}>{op.f}</td>
+                      <td>{op.g}</td>
+                      <td>{op.d}</td>
+                    </>:<>
+                      <td style={{color: hit ? 'var(--acc)' : '#ef4444', fontWeight:700}}>{op.d}</td>
+                      <td>{op.kicks!=null?op.kicks:'-'}</td>
+                      <td>{op.handballs!=null?op.handballs:'-'}</td>
+                    </>}
+                    <td>{op.p}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    return (
+      <div className="modal-gl-wrap" style={{background:'#000'}}>
+        <table className="gl-tbl" style={{background:'#000'}}>
+          <thead style={{color:'var(--acc)'}}><tr><th>Yr</th><th>Rd</th><th>Opp</th><th>Pos</th>{isGoals?(milestone==='first'?<><th>1st</th><th>G</th><th>B</th><th>I50</th></>:<><th>G</th><th>B</th><th>1st</th><th>I50</th></>):isFantasy?<><th>AF</th><th>G</th><th>D</th></>:<><th>D</th><th>Ki</th><th>HB</th></>}<th>TOG%</th></tr></thead>
+          <tbody>
+            {games.map((g, j) => {
+              let val;
+              if (isGoals) val = g.goals;
+              else if (isFantasy) val = g.fantasy || 0;
+              else val = g.disposals;
+              const hit = isGoals && milestone==='first' ? g.first_goal : val >= milestone;
+              const oppTS = TEAM_STYLES[g.opponent] || {};
+              return (
+                <tr key={j}>
+                  <td>{g.year}</td>
+                  <td>{shortRound(g.round)}</td>
+                  <td><span style={{background:oppTS.bg,color:oppTS.txt,padding:'1px 4px',borderRadius:3,fontSize:9}}>{ABBREV[g.opponent]||g.opponent?.substring(0,4)}</span></td>
+                  <td style={{fontSize:9,color:'var(--t3)'}}>{g.position||''}</td>
+                  {isGoals?(milestone==='first'?<>
+                    <td style={{color:'var(--acc)',fontWeight:700,textAlign:'center'}}>{g.first_goal?'✓':''}</td>
+                    <td style={{color:g.goals>=1?'var(--acc)':'#ef4444',fontWeight:700}}>{g.goals}</td>
+                    <td>{g.behinds||0}</td>
+                    <td>{g.marks_i50||0}</td>
+                  </>:<>
+                    <td style={{color:hit?'var(--acc)':'#ef4444',fontWeight:700}}>{g.goals}</td>
+                    <td>{g.behinds||0}</td>
+                    <td style={{color:'var(--acc)',fontWeight:700,textAlign:'center'}}>{g.first_goal?'✓':''}</td>
+                    <td>{g.marks_i50||0}</td>
+                  </>):isFantasy?<>
+                    <td style={{color:hit?'var(--acc)':'#ef4444',fontWeight:700}}>{g.fantasy||0}</td>
+                    <td>{g.goals}</td>
+                    <td>{g.disposals}</td>
+                  </>:<>
+                    <td style={{color:hit?'var(--acc)':'#ef4444',fontWeight:700}}>{g.disposals}</td>
+                    <td>{g.kicks!=null?g.kicks:'-'}</td>
+                    <td>{g.handballs!=null?g.handballs:'-'}</td>
+                  </>}
+                  <td>{g.pct_played||0}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const singularPos = position && POS_FULL[position] ? POS_FULL[position] : (fullPos ? fullPos.replace(/ves\s*$/i, 'f').replace(/([^f])s\s*$/i, '$1') : '');
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={e => e.stopPropagation()}>
+        <div className="modal-top" style={{background:`linear-gradient(135deg, ${ts.bg||'var(--bg2)'}, ${ts.bg||'var(--bg2)'}88, var(--bg0))`}}>
+          <div className="modal-top-photo">
+            {photoUrl ? <img src={photoUrl} alt="" /> : <div className="modal-top-photo-ph" style={{background:ts.bg,color:ts.txt}}>#{pl.number}</div>}
+          </div>
+          <div className="modal-top-info">
+            <button className="modal-close-btn" onClick={onClose}>CLOSE &times;</button>
+            <div className="modal-name">{pl.name}</div>
+            <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+              <div className="modal-team-badge" style={{background:ts.bg,color:ts.txt,border:`1px solid ${ts.txt||'#fff'}33`}}>
+                {D.logos[pl.team] && <img src={D.logos[pl.team]} style={{width:14,height:14}} alt="" />}
+                {teamAbbr}
+              </div>
+              <div className="modal-pos" style={{margin:0}}>{singularPos}</div>
+            </div>
+            {allOdds.length > 0 && (
+              <div className="modal-odds-line">
+                Odds: {allOdds.map((o, i) => <span key={i}>{i > 0 ? ', ' : ''}<b>${o.price.toFixed(2)}</b> {o.bookie}</span>)}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="modal-cards" style={{background:`linear-gradient(135deg, ${ts.bg||'var(--bg0)'}33, var(--bg0))`}}>
+          <div className="modal-card" style={{background:'var(--bg2)'}}><div className="modal-card-val">{totalGames}</div><div className="modal-card-lbl">GM</div></div>
+          <div className="modal-card" style={{background:'var(--bg2)'}}><div className="modal-card-val">{avgPct}%</div><div className="modal-card-lbl">TOG %</div></div>
+          <div className="modal-card" style={{background:'var(--bg2)'}}><div className="modal-card-val">{totalGoals}</div><div className="modal-card-lbl">Goals</div></div>
+          <div className="modal-card" style={{background:'var(--bg2)'}}><div className="modal-card-val">{avgDisp}</div><div className="modal-card-lbl">Avg Disp</div></div>
+          <div className="modal-card" style={{background:'var(--bg2)'}}><div className="modal-card-val">{avgAFModal}</div><div className="modal-card-lbl">AVG AF</div></div>
+          {position && posRank.gr ? (
+            <div className="modal-card" style={{background:rankBg(posRank.gr),border:`1px solid ${rankColor(posRank.gr)}33`}}><div className="modal-card-val" style={{color:rankColor(posRank.gr)}}>#{posRank.gr}</div><div className="modal-card-lbl">GLS V {oppAbbr}</div></div>
+          ) : null}
+          {position && posRank.dr ? (
+            <div className="modal-card" style={{background:rankBg(posRank.dr),border:`1px solid ${rankColor(posRank.dr)}33`}}><div className="modal-card-val" style={{color:rankColor(posRank.dr)}}>#{posRank.dr}</div><div className="modal-card-lbl">DISP V {oppAbbr}</div></div>
+          ) : null}
+        </div>
+
+        <div className="modal-filters" style={{background:`linear-gradient(135deg, ${ts.bg||'var(--bg0)'}22, var(--bg0))`}}>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}}>
+            <div className="cl">Period</div>
+            <div className="tg" style={{flex:1}}>
+              <button className={"tb"+(period==='all'?" on":"")} onClick={()=>setPeriod('all')}>All</button>
+              <button className={"tb"+(period==='last3y'?" on":"")} onClick={()=>setPeriod('last3y')}>Last 3 Yrs</button>
+              <button className={"tb"+(period==='2026'?" on":"")} onClick={()=>setPeriod('2026')}>2026</button>
+              <button className={"tb"+(period==='last10'?" on":"")} onClick={()=>setPeriod('last10')}>Last 10</button>
+              <button className={"tb"+(period==='last5'?" on":"")} onClick={()=>setPeriod('last5')}>Last 5</button>
+            </div>
+          </div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center',marginTop:4}}>
+            <div className="cl">Stat</div>
+            <div className="tg" style={{flex:1}}>
+              <button className={"tb"+(subTab==='goals'?" on":"")} onClick={()=>setSubTab('goals')}>Goals</button>
+              <button className={"tb"+(subTab==='disposals'?" on":"")} onClick={()=>setSubTab('disposals')}>Disposals</button>
+              <button className={"tb"+(subTab==='fantasy'?" on":"")} onClick={()=>setSubTab('fantasy')}>Fantasy</button>
+            </div>
+            <div className="tg">
+              {activeMs.map(m => <button key={m} className={"tb"+(milestone===m?" on":"")} onClick={()=>setMilestone(m)}>{m==='first'?'First':m+'+'}</button>)}
+            </div>
+          </div>
+        </div>
+
+        <div className="modal-section-title" style={{color:'var(--acc)'}}>{subTab === 'goals' ? 'Goal Stats' : subTab === 'disposals' ? 'Disposal Stats' : 'Fantasy Stats'}</div>
+
+        <div style={{padding:'0 0 18px'}}>
+          {factors.map(f => {
+            const games = f.isPosMode ? f.fn() : getFilteredGames(f.fn);
+            const isOpen = openFactor === f.id;
+            // For position mode, group by round to count games (1 round = 1 game)
+            let sr, count, hitsCount, posRoundData;
+            const shortStat = subTab === 'goals' ? 'goals' : 'disp';
+            if (f.isPosMode) {
+              const byRound = {};
+              games.forEach(op => {
+                const rk = op.round || 'unknown';
+                if (!byRound[rk]) byRound[rk] = {goals:0, disp:0, fantasy:0, players:[]};
+                byRound[rk].goals += (op.g||0);
+                byRound[rk].disp += (op.d||0);
+                byRound[rk].fantasy += (op.f||0);
+                byRound[rk].players.push(op);
+              });
+              posRoundData = Object.entries(byRound);
+              count = posRoundData.length;
+              let totalStat;
+              if (subTab === 'goals') totalStat = posRoundData.reduce((s,r)=>s+r[1].goals,0);
+              else if (subTab === 'fantasy') totalStat = posRoundData.reduce((s,r)=>s+r[1].fantasy,0);
+              else totalStat = posRoundData.reduce((s,r)=>s+r[1].disp,0);
+              hitsCount = totalStat;
+              // SR: how many individual players hit the milestone / total players
+              let playerHits;
+              if (subTab === 'goals') playerHits = games.filter(op => op.g >= milestone).length;
+              else if (subTab === 'fantasy') playerHits = games.filter(op => (op.f||0) >= milestone).length;
+              else playerHits = games.filter(op => op.d >= milestone).length;
+              sr = games.length > 0 ? Math.round(playerHits / games.length * 100) : 0;
+            } else {
+              sr = getSR(games);
+              count = games.length;
+              let hitsFilter;
+              if (subTab === 'goals') hitsFilter = (g) => g.goals >= milestone;
+              else if (subTab === 'fantasy') hitsFilter = (g) => (g.fantasy||0) >= milestone;
+              else hitsFilter = (g) => g.disposals >= milestone;
+              hitsCount = games.filter(hitsFilter).length;
+            }
+            if (f.id !== 'all' && count === 0) return null;
+            let desc;
+            if (f.isPosMode && count > 0) {
+              if (subTab === 'goals') {
+                const totalGoals = posRoundData.reduce((s,r)=>s+r[1].goals,0);
+                desc = `${totalGoals} goals in ${count} games`;
+              } else if (subTab === 'fantasy') {
+                const totalAF = posRoundData.reduce((s,r)=>s+r[1].fantasy,0);
+                const totalPlayers = posRoundData.reduce((s,r)=>s+r[1].players.length,0);
+                const avgPerPlayer = totalPlayers > 0 ? (totalAF / totalPlayers).toFixed(1) : '0.0';
+                desc = `avg ${avgPerPlayer} AF in ${count} games`;
+              } else {
+                const totalDisp = posRoundData.reduce((s,r)=>s+r[1].disp,0);
+                const totalPlayers = posRoundData.reduce((s,r)=>s+r[1].players.length,0);
+                const avgPerPlayer = totalPlayers > 0 ? (totalDisp / totalPlayers).toFixed(1) : '0.0';
+                desc = `avg ${avgPerPlayer} disp in ${count} games`;
+              }
+            } else if (subTab === 'fantasy' && count > 0) {
+              const totalAF = games.reduce((s,g) => s + (g.fantasy||0), 0);
+              desc = `avg ${(totalAF/count).toFixed(1)} AF in ${count} games`;
+            } else if (subTab === 'disposals' && count > 0) {
+              desc = `avg. ${(games.reduce((s,g) => s + g.disposals, 0) / count).toFixed(1)} disp in ${count} games`;
+            } else if (subTab === 'goals' && count > 0) {
+              const totalGoals = games.reduce((s,g) => s + (g.goals||0), 0);
+              desc = `${totalGoals} goals in ${count} games`;
+            } else {
+              desc = `${hitsCount} ${shortStat} in ${count} games`;
+            }
+            return (
+              <div key={f.id} className={"modal-factor"+(isOpen?" open":"")} style={{background:srBg(sr)}} onClick={() => setOpenFactor(isOpen ? null : f.id)}>
+                <div className="modal-factor-hdr">
+                  <div className="modal-factor-name">{f.name}</div>
+                  <div className="modal-factor-desc">{desc}</div>
+                  <div className="modal-factor-sr" style={{color:srColor(sr)}}>{sr}%</div>
+                  <div className="modal-factor-arrow">&#9660;</div>
+                </div>
+                {isOpen && (
+                  <div className="modal-factor-body" onClick={e => e.stopPropagation()}>
+                    {renderGameLog(games, f.isPosMode)}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlayerStats({game, oddsData}) {
+  const [subTab, setSubTab] = useState('goals');
+  const [factor, setFactor] = useState('all');
+  const [period, setPeriod] = useState('last10');
+  const [milestone, setMilestone] = useState(1);
+  const [exp, setExp] = useState(null);
+  const [modalPlayer, setModalPlayer] = useState(null);
+
+  const goalMilestones = [1, 2, 3, 4, 'first'];
+  const dispMilestones = [15, 20, 25, 30];
+  const fantasyMilestones = [80, 90, 100, 110];
+  const activeMilestones = subTab === 'goals' ? goalMilestones : subTab === 'disposals' ? dispMilestones : fantasyMilestones;
+
+  React.useEffect(() => {
+    if (subTab === 'goals') setMilestone(1);
+    else if (subTab === 'disposals') setMilestone(15);
+    else if (subTab === 'fantasy') setMilestone(80);
+    setExp(null);
+  }, [subTab]);
+
+  const gameTeams = [game.home, game.away];
+  const teamListPlayers = D.teamList.filter(p => gameTeams.includes(p.team));
+  const oddsKey = `${game.home}|${game.away}`;
+  const op = D.oddsPlayers[oddsKey];
+  const hasTeamList = teamListPlayers.length > 0;
+
+  const gameTeamPlayers = hasTeamList ? teamListPlayers : (() => {
+    if (!op) return [];
+    const hp = (op.home||[]).map(n => ({name:n, team:game.home, pos_short:'', number:0, position:''}));
+    const ap = (op.away||[]).map(n => ({name:n, team:game.away, pos_short:'', number:0, position:''}));
+    return [...hp, ...ap];
+  })();
+
+  const filteredGames = useMemo(() => {
+    const filtered = {};
+    gameTeamPlayers.forEach(p => {
+      const playerData = D.playerData[p.name];
+      if (!playerData) return;
+      let games = [...playerData.games];
+      if (factor === 'h2h') {
+        const opp = p.team === game.home ? game.away : game.home;
+        games = games.filter(g => g.opponent === opp);
+      } else if (factor === 'venue' && game.venueShort) {
+        games = games.filter(g => g.venue === game.venueShort);
+      } else if (factor === 'wet') {
+        games = games.filter(g => g.conditions === 'WET');
+      } else if (factor === 'pos') {
+        const pd = D.playerData[p.name];
+        const pos = pd?.position || '';
+        if (pos) {
+          games = games.filter(g => g.position === pos);
+        }
+      } else if (factor === 'daynight') {
+        games = games.filter(g => g.tod === game.tod);
+      }
+      if (period === 'last5') games = games.slice(0,5);
+      else if (period === 'last10') games = games.slice(0,10);
+      else if (period === '2026') games = games.filter(g => g.year === 2026);
+      filtered[p.name] = games;
+    });
+    return filtered;
+  }, [gameTeamPlayers, factor, period]);
+
+  const getStrikeRate = (games, ms, st) => {
+    if (!games.length) return 0;
+    let hitFilter;
+    if (st === 'goals') {
+      if (ms === 'first') hitFilter = (g) => g.first_goal;
+      else hitFilter = (g) => g.goals >= ms;
+    } else if (st === 'fantasy') {
+      hitFilter = (g) => (g.fantasy||0) >= ms;
+    } else {
+      hitFilter = (g) => g.disposals >= ms;
+    }
+    return Math.round(games.filter(hitFilter).length / games.length * 100);
+  };
+
+  const getPosSR = (pl) => {
+    const pos = D.playerData[pl.name]?.position || '';
+    if (!pos) return {sr: 0, count: 0};
+    // Find the Round opponent for this player's team
+    const oppTeam = pl.team === game.home ? game.away : game.home;
+    // All players from any team who played this position against oppTeam
+    let total = 0, hits = 0;
+    Object.keys(D.posLookup).forEach(key => {
+      const parts = key.split('|');
+      // key format: team|opponent|round|position
+      // Want: any team's players in this position who played against oppTeam
+      if (parts[1] === oppTeam && parts[3] === pos) {
+        D.posLookup[key].forEach(op => {
+          total++;
+          let val;
+          if (subTab === 'goals') {
+            if (milestone === 'first') val = op.fg ? 1 : 0;
+            else val = op.g;
+          } else if (subTab === 'fantasy') {
+            val = op.f || 0;
+          } else {
+            val = op.d;
+          }
+          if (subTab === 'goals' && milestone === 'first') {
+            if (val) hits++;
+          } else {
+            if (val >= milestone) hits++;
+          }
+        });
+      }
+    });
+    return {sr: total ? Math.round(hits / total * 100) : 0, count: total};
+  };
+
+  const sortByStrikeRate = (players) => {
+    return [...players].sort((a, b) => getStrikeRate(b.games, milestone, subTab) - getStrikeRate(a.games, milestone, subTab));
+  };
+
+  const sortPlayers = (players) => {
+    if (factor === 'pos') {
+      return [...players].sort((a, b) => getPosSR(b).sr - getPosSR(a).sr);
+    }
+    return sortByStrikeRate(players);
+  };
+  const hPlayers = sortPlayers(gameTeamPlayers.filter(p => p.team === game.home).map(p => ({...p, games: filteredGames[p.name] || []})));
+  const aPlayers = sortPlayers(gameTeamPlayers.filter(p => p.team === game.away).map(p => ({...p, games: filteredGames[p.name] || []})));
+  const hS = TEAM_STYLES[game.home] || {};
+  const aS = TEAM_STYLES[game.away] || {};
+
+  // Build matchup rows - sorted by strike rate regardless of position
+  const maxLen = Math.max(hPlayers.length, aPlayers.length);
+  const matchups = [];
+  for (let i = 0; i < maxLen; i++) {
+    matchups.push({a: hPlayers[i] || null, b: aPlayers[i] || null, pos: hPlayers[i]?.pos_short || aPlayers[i]?.pos_short || ''});
+  }
+
+  const tog = (k) => setExp(exp === k ? null : k);
+
+  const renderPC = (pl, side, teamStyles) => {
+    if (!pl) return <div className="pc" style={{opacity:.2}}><div className="pi"><span className="pname" style={{color:'var(--t3)'}}>-</span></div></div>;
+    const isR = side === 'right';
+    const games = pl.games || [];
+    const isPosFilt = factor === 'pos';
+    const playerSR = getStrikeRate(games, milestone, subTab);
+    const posSRData = isPosFilt ? getPosSR(pl) : null;
+    const sr = isPosFilt ? posSRData.sr : playerSR;
+    const srCount = isPosFilt ? posSRData.count : games.length;
+    const oddsKey = subTab === 'goals' ? (milestone === 'first' ? 'first_goal' : 'goals_over') : subTab === 'disposals' ? 'disposals_over' : 'fantasy_over';
+    const oddsObj = milestone === 'first' ? (D.playerOdds[pl.name]?.[oddsKey] ? D.playerOdds[pl.name][oddsKey] : null) : D.playerOdds[pl.name]?.[oddsKey]?.[milestone];
+    const srColor = sr >= 70 ? 'var(--acc)' : sr >= 40 ? '#eab308' : '#ef4444';
+    const prefix = isR ? 'B' : 'A';
+    const k = prefix + '_' + pl.name;
+    const isE = exp === k;
+    const pos = D.playerData[pl.name]?.position || pl.pos_short;
+
+    return (
+      <div className={'pc' + (isR ? ' rt' : '') + (isE ? ' exp' : '')} onClick={() => setModalPlayer(pl)}>
+        <div className="pi">
+          <div className="pn-num" style={{background: teamStyles.bg, color: teamStyles.txt}}>{D.photos[pl.name] ? <img src={D.photos[pl.name]} alt="" /> : pl.number}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div className="pname">{pl.name}</div>
+            <div className="ppos"><span style={{background:'rgba(0,212,160,0.2)',color:'var(--acc)',padding:'2px 6px',borderRadius:4,fontSize:8,fontWeight:700,textTransform:'uppercase',marginRight:6}}>{pl.pos_short}</span>{oddsObj && oddsObj[0] ? <span style={{color:'var(--acc)',fontSize:9}}>${oddsObj[0].price.toFixed(2)} <span style={{opacity:.7}}>({oddsObj[0].bookie})</span></span> : ''}</div>
+          </div>
+          <div className="psr">
+            <div className="psr-val" style={{color: srColor}}>{sr}%</div>
+            <div className="psr-lbl">{isPosFilt ? `${srCount} opp` : `${games.length} gms`}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderPD = (pl, teamStyles) => {
+    if (!pl) return null;
+    const isPosFilt = factor === 'pos';
+    const playerPos = D.playerData[pl.name]?.position || '';
+
+    if (isPosFilt && playerPos) {
+      // Position mode: show all players who played this position against the round opponent
+      // e.g. Hawks FB -> show all FBs from any team who played against Sydney
+      const oppTeam = pl.team === game.home ? game.away : game.home;
+      const rows = [];
+      Object.keys(D.posLookup).forEach(key => {
+        const parts = key.split('|');
+        // key format: team|opponent|round|position
+        // Want: any team's players who played this position against oppTeam
+        if (parts[1] === oppTeam && parts[3] === playerPos) {
+          const playerTeam = parts[0];
+          const teamTS = TEAM_STYLES[playerTeam]||{};
+          const teamAbbr = ABBREV[playerTeam] || playerTeam.substring(0,4);
+          D.posLookup[key].forEach((op,j) => {
+            rows.push({...op, playerTeam, teamAbbr, teamTS, round: parts[2], gi: rows.length, j});
+          });
+        }
+      });
+
+      rows.sort((a,b) => (b.ds||0) - (a.ds||0));
+
+      if (!rows.length) return <div className="pd"><div style={{fontSize:10,color:'var(--t3)'}}>No position data for this filter</div></div>;
+
+      return (
+        <div className="pd">
+          <div className="gl-wrap" style={{maxHeight: 8*24+28}}>
+            <table className="gl-tbl">
+              <thead style={{color:'var(--acc)'}}>
+                <tr>
+                  <th>Player</th><th>Rd</th>
+                  {subTab==='goals'?<><th>G</th><th>B</th><th>MI50</th></>:subTab==='fantasy'?<><th>AF</th><th>G</th><th>D</th></>:<><th>D</th><th>Ki</th><th>HB</th></>}
+                  <th>Time%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r,idx) => {
+                  let statVal;
+                  if (subTab === 'goals') statVal = r.g;
+                  else if (subTab === 'fantasy') statVal = r.f;
+                  else statVal = r.d;
+                  const isHit = statVal >= milestone;
+                  return (
+                    <tr key={idx}>
+                      <td style={{fontSize:9,fontWeight:600,color:'var(--t1)',whiteSpace:'nowrap'}}>
+                        <span style={{background:r.teamTS.bg,color:r.teamTS.txt,padding:'0px 3px',borderRadius:2,fontSize:7,marginRight:3}}>{r.teamAbbr}</span>
+                        {r.n}
+                      </td>
+                      <td style={{fontSize:8,color:'var(--t3)'}}>{r.round}</td>
+                      {subTab==='goals'?<>
+                        <td style={{color:isHit?'var(--acc)':'#ef4444',fontWeight:700}}>{r.g}</td>
+                        <td>{r.b}</td>
+                        <td>{r.m}</td>
+                      </>:subTab==='fantasy'?<>
+                        <td style={{color:isHit?'var(--acc)':'#ef4444',fontWeight:700}}>{r.f}</td>
+                        <td>{r.g}</td>
+                        <td>{r.d}</td>
+                      </>:<>
+                        <td style={{color:isHit?'var(--acc)':'#ef4444',fontWeight:700}}>{r.d}</td>
+                        <td>{r.kicks!=null?r.kicks:'-'}</td>
+                        <td>{r.handballs!=null?r.handballs:'-'}</td>
+                      </>}
+                      <td>{r.p.toFixed?r.p.toFixed(0):r.p}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    // Normal mode (non-position)
+    const games = pl.games || [];
+    if (!games.length) return <div className="pd"><div style={{fontSize:10,color:'var(--t3)'}}>No games for this filter</div></div>;
+
+    const totalGoals = games.reduce((s,g)=>s+g.goals,0);
+    const totalBehinds = games.reduce((s,g)=>s+(g.behinds||0),0);
+    const totalAF = games.reduce((s,g)=>s+(g.fantasy||0),0);
+    const avgDisp = games.length ? (games.reduce((s,g)=>s+g.disposals,0)/games.length).toFixed(1) : '0.0';
+    const avgAF = games.length ? (totalAF/games.length).toFixed(1) : '0.0';
+    const avgPct = games.length ? (games.reduce((s,g)=>s+g.pct_played,0)/games.length).toFixed(0) : '0';
+    const avgMI50 = games.length ? (games.reduce((s,g)=>s+(g.marks_i50||0),0)/games.length).toFixed(1) : '0.0';
+
+    const summaryItems = subTab === 'fantasy' ? [
+      {label:'Games',val:games.length},
+      {label:'%Played',val:avgPct+'%'},
+      {label:'Total AF',val:totalAF},
+      {label:'AVG AF',val:avgAF},
+      {label:'Goals',val:totalGoals},
+      {label:'Disp',val:avgDisp}
+    ] : [
+      {label:'Games',val:games.length},
+      {label:'%Played',val:avgPct+'%'},
+      {label:'Goals',val:totalGoals},
+      {label:'Behinds',val:totalBehinds},
+      {label:'Avg Dis',val:avgDisp},
+      {label:'AVG AF',val:avgAF}
+    ];
+
+    return (
+      <div className="pd">
+        <div style={{background:'var(--bg2)',border:'1px solid var(--brd)',borderRadius:8,padding:'6px 8px',marginBottom:8,fontSize:10,display:'flex',justifyContent:'space-between',gap:4,flexWrap:'wrap'}}>
+          {summaryItems.map((it,idx)=>(
+            <div key={idx} style={{textAlign:'center',flex:'1 1 0',minWidth:40}}>
+              <div style={{color:'var(--t3)',fontSize:8,whiteSpace:'nowrap'}}>{it.label}</div>
+              <div style={{fontWeight:700,fontSize:11}}>{it.val}</div>
+            </div>
+          ))}
+        </div>
+        <div className="gl-wrap" style={{maxHeight: 6*24+28}}>
+          <table className="gl-tbl">
+            <thead style={{color:'var(--acc)'}}>
+              <tr>
+                <th>Year</th><th>Opp</th><th>Venue</th>
+                {subTab==='goals'?(milestone==='first'?<><th>1st</th><th>G</th><th>B</th><th>MI50</th></>:<><th>G</th><th>B</th><th>1st</th><th>MI50</th></>):subTab==='fantasy'?<><th>AF</th><th>G</th><th>D</th></>:<><th>G</th><th>B</th><th>D</th><th>MI50</th></>}
+                <th>Time%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {games.map((g, i) => {
+                const oppTS = TEAM_STYLES[g.opponent]||{};
+                const oppAbbr = ABBREV[g.opponent] || g.opponent.substring(0,4);
+                let hitVal, isHit;
+                if (subTab === 'goals') {
+                  if (milestone === 'first') isHit = g.first_goal;
+                  else { hitVal = g.goals; isHit = hitVal >= milestone; }
+                } else if (subTab === 'fantasy') {
+                  hitVal = g.fantasy || 0;
+                  isHit = hitVal >= milestone;
+                } else {
+                  hitVal = g.disposals;
+                  isHit = hitVal >= milestone;
+                }
+                return (
+                  <tr key={i}>
+                    <td>{g.year}</td>
+                    <td><span style={{background:oppTS.bg,color:oppTS.txt,padding:'1px 4px',borderRadius:3,fontSize:9}}>{oppAbbr}</span></td>
+                    <td style={{fontSize:9}}>{g.venue}</td>
+                    {subTab==='goals'?(milestone==='first'?<>
+                      <td style={{color:'var(--acc)',fontWeight:700,textAlign:'center'}}>{g.first_goal?'✓':''}</td>
+                      <td style={{color:g.goals>=1?'var(--acc)':'#ef4444',fontWeight:700}}>{g.goals}</td>
+                      <td>{g.behinds||0}</td>
+                      <td>{g.marks_i50||0}</td>
+                    </>:<>
+                      <td style={{color:g.goals>=milestone?'var(--acc)':'#ef4444',fontWeight:700}}>{g.goals}</td>
+                      <td>{g.behinds||0}</td>
+                      <td style={{color:'var(--acc)',fontWeight:700,textAlign:'center'}}>{g.first_goal?'✓':''}</td>
+                      <td>{g.marks_i50||0}</td>
+                    </>):subTab==='fantasy'?<>
+                      <td style={{color:isHit?'var(--acc)':'#ef4444',fontWeight:700}}>{g.fantasy||0}</td>
+                      <td>{g.goals}</td>
+                      <td>{g.disposals}</td>
+                    </>:<>
+                      <td>{g.goals}</td>
+                      <td>{g.behinds||0}</td>
+                      <td style={{color:isHit?'var(--acc)':'#ef4444',fontWeight:700}}>{g.disposals}</td>
+                      <td>{g.marks_i50||0}</td>
+                    </>}
+                    <td>{g.pct_played.toFixed(0)}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  if (!gameTeamPlayers.length) {
+    return <div className="sec"><p style={{color: 'var(--t2)', padding: '20px'}}>No player data available for this game</p></div>;
+  }
+
+  return (
+    <div className="sec">
+      <div className="stit">Player Stats</div>
+      {!hasTeamList && <div style={{textAlign:'center',fontSize:10,color:'var(--t3)',marginBottom:8,fontStyle:'italic'}}>Team lists not available — showing players from odds markets</div>}
+      <div className="cr" style={{gap:16}}>
+        <div className="cl">Stat</div>
+        <div className="tg">
+          <button className={"tb" + (subTab === 'goals' ? " on" : "")} onClick={() => setSubTab('goals')}>Goals</button>
+          <button className={"tb" + (subTab === 'disposals' ? " on" : "")} onClick={() => setSubTab('disposals')}>Disposals</button>
+          <button className={"tb" + (subTab === 'fantasy' ? " on" : "")} onClick={() => setSubTab('fantasy')}>Fantasy</button>
+        </div>
+        <div className="tg">
+          {activeMilestones.map(m => (
+            <button key={m} className={"tb" + (milestone === m ? " on" : "")} onClick={() => setMilestone(m)}>{m === 'first' ? 'First' : m + '+'}</button>
+          ))}
+        </div>
+      </div>
+      <div className="cr" style={{gap:16}}>
+        <div className="cl">Factor</div>
+        <div className="tg">
+          <button className={"tb" + (factor === 'all' ? " on" : "")} onClick={() => setFactor('all')}>All</button>
+          <button className={"tb" + (factor === 'h2h' ? " on" : "")} onClick={() => setFactor('h2h')}>H2H</button>
+          <button className={"tb" + (factor === 'venue' ? " on" : "")} onClick={() => setFactor('venue')}>Venue</button>
+          <button className={"tb" + (factor === 'wet' ? " on" : "")} onClick={() => setFactor('wet')}>Wet</button>
+          <button className={"tb" + (factor === 'pos' ? " on" : "")} onClick={() => setFactor('pos')}>Position</button>
+          <button className={"tb" + (factor === 'daynight' ? " on" : "")} onClick={() => setFactor('daynight')}>{game.tod||'Day/Night'}</button>
+        </div>
+        <div className="cl" style={{marginLeft:8}}>Period</div>
+        <div className="tg">
+          <button className={"tb" + (period === 'last5' ? " on" : "")} onClick={() => setPeriod('last5')}>Last 5</button>
+          <button className={"tb" + (period === 'last10' ? " on" : "")} onClick={() => setPeriod('last10')}>Last 10</button>
+          <button className={"tb" + (period === '2026' ? " on" : "")} onClick={() => setPeriod('2026')}>2026</button>
+          <button className={"tb" + (period === 'all' ? " on" : "")} onClick={() => setPeriod('all')}>All</button>
+        </div>
+      </div>
+
+      <div className="mc" style={{marginTop:12}}>
+        <div className="mh">
+          <div className="mht" style={{background:hS.bg,color:hS.txt,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>{D.logos[game.home] && <img src={D.logos[game.home]} className="team-logo" alt="" />}{ABBREV[game.home]}</div>
+          <div className="mhv">VS</div>
+          <div className="mht" style={{background:aS.bg,color:aS.txt,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>{ABBREV[game.away]}{D.logos[game.away] && <img src={D.logos[game.away]} className="team-logo" alt="" />}</div>
+        </div>
+        {matchups.map((m, i) => (
+          <div key={i} className="mr">
+            {renderPC(m.a, 'left', hS)}
+            <div className="mp"><span className="mpb">{i+1}</span></div>
+            {renderPC(m.b, 'right', aS)}
+          </div>
+        ))}
+      </div>
+      {modalPlayer && <PlayerModal pl={modalPlayer} game={game} initSubTab={subTab} initMilestone={milestone} initFactor={factor} onClose={() => setModalPlayer(null)} />}
+    </div>
+  );
+}
+
+function App() {
+  const [selGame,setSelGame]=useState(0);
+  const [mainTab, setMainTab] = useState('player');
+  const games=useMemo(()=>D.orGames.filter(gm=>D.odds[`${gm.home}|${gm.away}`]),[]);
+  if (!games.length) return <div style={{color:'var(--t2)',padding:40,textAlign:'center'}}>No games with odds available</div>;
+  const g=games[Math.min(selGame, games.length-1)];
+  const oddsKey=`${g.home}|${g.away}`;
+  const oddsData=D.odds[oddsKey]||null;
+  const hS=TEAM_STYLES[g.home]||{};
+  const aS=TEAM_STYLES[g.away]||{};
+
+  return (
+    <div>
+      <div className="hdr">
+        <div className="hdr-in">
+          <div>
+            <div className="logo-t">RSG</div>
+            <div className="logo-s">AFL Round 5, 2026</div>
+          </div>
+          <div className="gsel" style={{display:'grid',gridTemplateColumns:'repeat(5, 1fr)',gap:6,width:'100%',maxWidth:700,margin:'0 auto'}}>
+            {games.map((gm,i)=>(
+              <button key={i} className={"gbtn"+(selGame===i?" on":"")} onClick={()=>setSelGame(i)} style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,padding:'8px 4px',fontSize:10,minWidth:0,background:selGame===i?`linear-gradient(90deg, ${(TEAM_STYLES[gm.home]||{}).bg||'var(--bg2)'}44, ${(TEAM_STYLES[gm.away]||{}).bg||'var(--bg2)'}44)`:`linear-gradient(90deg, ${(TEAM_STYLES[gm.home]||{}).bg||'var(--bg2)'}22, ${(TEAM_STYLES[gm.away]||{}).bg||'var(--bg2)'}22)`}}>
+                <div style={{display:'flex',alignItems:'center',gap:4}}>
+                  {D.logos[gm.home] && <img src={D.logos[gm.home]} style={{width:18,height:18}} alt="" />}
+                  <span style={{color:'var(--t3)',fontSize:9}}>v</span>
+                  {D.logos[gm.away] && <img src={D.logos[gm.away]} style={{width:18,height:18}} alt="" />}
+                </div>
+                {(gm.day || gm.time) && <div style={{fontSize:8,color:'var(--acc)',marginTop:1,fontWeight:600}}>{gm.day ? gm.day.substring(0,3) : ''}{gm.day && gm.time ? ' ' : ''}{gm.time || ''}</div>}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="ctr" style={{background:`linear-gradient(90deg, ${hS.bg||'var(--bg0)'}22, var(--bg0) 30%, var(--bg0) 70%, ${aS.bg||'var(--bg0)'}22)`}}>
+        <div className="gml">
+          {D.logos[g.home] && <img src={D.logos[g.home]} className="team-logo-lg" alt="" />}
+          <span style={{background:hS.bg,color:hS.txt,padding:'4px 12px',borderRadius:6,fontWeight:800,fontSize:16}}>{ABBREV[g.home]}</span>
+          <div className="gmv">vs</div>
+          <span style={{background:aS.bg,color:aS.txt,padding:'4px 12px',borderRadius:6,fontWeight:800,fontSize:16}}>{ABBREV[g.away]}</span>
+          {D.logos[g.away] && <img src={D.logos[g.away]} className="team-logo-lg" alt="" />}
+        </div>
+        <div className="gvn">
+          {g.venue} | {g.day} {g.date} | {g.time} | {g.tod}
+        </div>
+        <div style={{display:'flex',justifyContent:'center',gap:20,marginBottom:16}}>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:10,color:'var(--t3)',marginBottom:2}}>Last 5</div>
+            <FormDots team={g.home}/>
+          </div>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:10,color:'var(--t3)',marginBottom:2}}>Last 5</div>
+            <FormDots team={g.away}/>
+          </div>
+        </div>
+
+        {oddsData&&(
+          <div className="odds-row">
+            <div className="od-item">
+              <span className="tbadge" style={{background:hS.bg,color:hS.txt}}>{ABBREV[g.home]}</span>
+              <span className="od-val">${oddsData.homeOdds.toFixed(2)}</span>
+              {oddsData.homeBookie && <span style={{fontSize:8,color:'var(--t3)',marginLeft:2}}>({oddsData.homeBookie})</span>}
+            </div>
+            <div className="od-item">Line: <span className="od-val">{oddsData.spread || 'N/A'}</span></div>
+            <div className="od-item">Total: <span className="od-val">{oddsData.total || 'N/A'}</span></div>
+            <div className="od-item">
+              <span className="tbadge" style={{background:aS.bg,color:aS.txt}}>{ABBREV[g.away]}</span>
+              <span className="od-val">${oddsData.awayOdds.toFixed(2)}</span>
+              {oddsData.awayBookie && <span style={{fontSize:8,color:'var(--t3)',marginLeft:2}}>({oddsData.awayBookie})</span>}
+            </div>
+          </div>
+        )}
+
+        <div className="tab-main">
+          <button className={"tb" + (mainTab === 'team' ? " on" : "")} onClick={() => setMainTab('team')}>Team Stats</button>
+          <button className={"tb" + (mainTab === 'player' ? " on" : "")} onClick={() => setMainTab('player')}>Player Stats</button>
+        </div>
+
+        <Streaks game={g} oddsData={oddsData} mainTab={mainTab}/>
+
+        {mainTab === 'team' ? (
+          <TeamStats game={g} oddsData={oddsData}/>
+        ) : (
+          <PlayerStats game={g} oddsData={oddsData}/>
+        )}
+      </div>
+      <div className="ftr">RSG AFL Dashboard - Round 5, 2026</div>
+    </div>
+  );
+}
+
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  componentDidCatch(error, info) { console.error('React Error:', error, info); }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement('pre', {style:{color:'red',padding:20,fontSize:14}},
+        'REACT ERROR: ' + (this.state.error && this.state.error.message) + '\n' +
+        (this.state.error && this.state.error.stack || ''));
+    }
+    return this.props.children;
+  }
+}
+
+ReactDOM.render(<ErrorBoundary><App/></ErrorBoundary>, document.getElementById('root'));
+</script>
+</body>
+</html>
